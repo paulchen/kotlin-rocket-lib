@@ -17,6 +17,14 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDirs("build/generated/resources")
+        }
+    }
+}
+
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -50,17 +58,30 @@ dependencies {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
+
 publishing {
     publications {
         create<MavenPublication>("kotlin-rocket-lib") {
             from(components["kotlin"])
         }
     }
-//
-//    repositories {
-//        maven {
-//            name = "myRepo"
-//            url = uri(layout.buildDirectory.dir("repo"))
-//        }
-//    }
+}
+
+tasks.create("createVersionFile") {
+    doLast {
+        val file = File("kotlin-rocket-lib/build/generated/resources/library-git-revision")
+        file.parentFile.parentFile.mkdir()
+        file.parentFile.mkdir()
+        file.delete()
+        file.outputStream().use { outputStream ->
+            project.exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+                standardOutput = outputStream
+            }
+        }
+    }
+}
+
+tasks.processResources {
+    dependsOn("createVersionFile")
 }
