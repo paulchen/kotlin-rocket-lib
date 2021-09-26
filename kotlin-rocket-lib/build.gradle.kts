@@ -1,5 +1,5 @@
 val log4jVersion = "2.14.1"
-val ktorVersion = "1.6.1"
+val ktorVersion = "1.6.3"
 val reflectionsVersion = "0.9.12"
 var commonsCodecVersion = "1.15"
 
@@ -7,7 +7,7 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.31"
     `java-library`
     `maven-publish`
 }
@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
 
     implementation("org.slf4j:slf4j-api:1.7.32")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
