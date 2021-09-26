@@ -26,7 +26,7 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
             botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels
         )
 
-        val webservice = Webservice()
+        val webservice = Webservice(botConfiguration.webservicePort)
         try {
             webservice.start()
         }

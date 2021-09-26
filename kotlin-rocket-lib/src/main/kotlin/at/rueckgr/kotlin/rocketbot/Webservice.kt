@@ -13,10 +13,9 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.time.LocalDateTime
 
-class Webservice : Logging {
+class Webservice(private val webserverPort: Int) : Logging {
     private val warningSeconds = 60L
     private val criticalSeconds = 120L
-    private val webserverPort = 8080
 
     private var engine: NettyApplicationEngine? = null
 
