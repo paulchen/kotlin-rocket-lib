@@ -41,9 +41,8 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
     }
 
     private suspend fun runWebsocketClient() {
-        var terminate = false
-        var reconnect = false
-        while (!terminate) {
+        var waitingTime = -1
+        while (true) {
             try {
                 val client = HttpClient(CIO) {
                     install(WebSockets)
@@ -60,26 +59,31 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
                         userInputRoutine.await()
                         messageOutputRoutine.await()
                     } catch (e: Exception) {
-                        terminate = true
+                        logger().error("Websocket error", e)
                     }
                 }
             }
             catch (e: Exception) {
-                if (reconnect) {
-                    logger().error("Error during reconnect, waiting 30 seconds", e)
-                    delay(30000L)
-                }
-                else {
-                    logger().error("Error while connecting", e)
-                    terminate = true
-                }
-
+                logger().error("Error during (re)connect", e)
             }
 
-            if (!terminate) {
-                logger().info("Websocket closed, trying to reconnect")
-                reconnect = true
-            }
+            waitingTime = getWaitingTime(waitingTime)
+            logger().info("Waiting $waitingTime seconds")
+
+            delay(waitingTime * 1000L)
+
+            logger().info("Websocket closed, trying to reconnect")
+        }
+    }
+
+    private fun getWaitingTime(oldWaitingTime: Int): Int {
+        val waitingTimes = listOf(5, 10, 30)
+
+        return if (oldWaitingTime == waitingTimes.last()) {
+            waitingTimes.last()
+        }
+        else {
+            waitingTimes[waitingTimes.indexOf(oldWaitingTime) + 1]
         }
     }
 
