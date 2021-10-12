@@ -1,6 +1,6 @@
 val log4jVersion = "2.14.1"
-val ktorVersion = "1.6.3"
-val reflectionsVersion = "0.9.12"
+val ktorVersion = "1.6.4"
+val reflectionsVersion = "0.10.1"
 var commonsCodecVersion = "1.15"
 
 group = "at.rueckgr.kotlin.rocketbot"
@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
 
     implementation("org.slf4j:slf4j-api:1.7.32")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
