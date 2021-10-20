@@ -21,7 +21,7 @@ class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigurat
         if (data.has("error")) {
             throw LoginException(data.get("error")?.get("message")?.textValue() ?: "Unknown error")
         }
-        val userId = data.get("result").get("id")
+        val userId = data.get("result").get("id").textValue()
         return arrayOf(
             RoomsGetMessage(id = "get-rooms-initial"),
             SubscribeMessage(id = "subscribe-stream-notify-user", name = "stream-notify-user", params = arrayOf("$userId/rooms-changed", false))
