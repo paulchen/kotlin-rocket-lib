@@ -4,6 +4,8 @@ import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
 import at.rueckgr.kotlin.rocketbot.websocket.SubscribeMessage
 import com.fasterxml.jackson.databind.JsonNode
+import java.util.*
+import kotlin.collections.ArrayList
 
 class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
         : AbstractStreamHandler(roomMessageHandler, botConfiguration) {
@@ -31,7 +33,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
             else {
                 listOf(
                     SubscribeMessage(
-                        id = "subscribe-$roomId",
+                        id = UUID.randomUUID().toString(),
                         name = "stream-room-messages",
                         params = arrayOf(roomId, false)
                     )
