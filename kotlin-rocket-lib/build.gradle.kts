@@ -17,6 +17,10 @@ repositories {
     mavenCentral()
 }
 
+java {
+    withSourcesJar()
+}
+
 sourceSets {
     main {
         resources {
@@ -62,7 +66,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 publishing {
     publications {
         create<MavenPublication>("kotlin-rocket-lib") {
-            from(components["kotlin"])
+            from(components["java"])
         }
     }
 }
@@ -84,4 +88,9 @@ tasks.create("createVersionFile") {
 
 tasks.processResources {
     dependsOn("createVersionFile")
+}
+
+tasks.publishToMavenLocal {
+    // necessary to build sources jar
+    dependsOn("build")
 }
