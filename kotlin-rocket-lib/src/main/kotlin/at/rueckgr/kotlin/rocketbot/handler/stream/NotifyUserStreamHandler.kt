@@ -17,7 +17,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
 
         return when (args.get(0).textValue()) {
             "inserted" -> handleChannelMessage(args)
-            "changed" -> handleDirectMessage(args)
+            "updated" -> handleDirectMessage(args)
             else -> emptyList()
         }
     }
@@ -47,6 +47,13 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
     }
 
     private fun handleDirectMessage(args: JsonNode): List<List<Any>> {
-        return emptyList()
+        val items = ArrayList<JsonNode>()
+        for (i in 1 until args.size()) {
+            items.add(args.get(i))
+        }
+
+        return items
+            .filter { it.get("t").textValue() == "d" }
+            .map { MessageProcessor.instance.handleStreamMessageItem(roomMessageHandler, botConfiguration, it.get("lastMessage")) }
     }
 }
