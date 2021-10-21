@@ -12,13 +12,17 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
     override fun getHandledStream() = "stream-notify-user"
 
     @Suppress("UNCHECKED_CAST")
-    override fun handleStreamMessage(configuration: BotConfiguration, data: JsonNode): List<List<Any>> {
+    override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
         val args: JsonNode = data.get("fields")?.get("args") ?: return emptyList()
 
-        if (args.get(0).textValue() != "inserted") {
-            return emptyList()
+        return when (args.get(0).textValue()) {
+            "inserted" -> handleChannelMessage(args)
+            "changed" -> handleDirectMessage(args)
+            else -> emptyList()
         }
+    }
 
+    private fun handleChannelMessage(args: JsonNode): List<List<Any>> {
         val items = ArrayList<JsonNode>()
         for (i in 1 until args.size()) {
             items.add(args.get(i))
@@ -27,7 +31,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         return items.map {
             val roomId = it.get("_id")
 
-            if (configuration.ignoredChannels.contains(it.get("fname")?.textValue())) {
+            if (botConfiguration.ignoredChannels.contains(it.get("fname")?.textValue())) {
                 emptyList()
             }
             else {
@@ -40,5 +44,9 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
                 )
             }
         }
+    }
+
+    private fun handleDirectMessage(args: JsonNode): List<List<Any>> {
+        return emptyList()
     }
 }

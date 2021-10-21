@@ -23,7 +23,7 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
 
     override fun getHandledMessage() = "changed"
 
-    override fun handleMessage(configuration: BotConfiguration, data: JsonNode, timestamp: Long): Array<Any> {
+    override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
         if (timestamp > 0L) {
             if (timestamp < newestTimestampSeen) {
                 logger().debug("Timestamp of message ({}) is older than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
@@ -36,7 +36,7 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
         val collection = data.get("collection")?.textValue() ?: return emptyArray()
 
         return handlers[collection]!!
-            .handleStreamMessage(configuration, data)
+            .handleStreamMessage(data)
             .flatten()
             .toTypedArray()
     }

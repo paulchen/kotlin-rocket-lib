@@ -122,7 +122,7 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
 
                 try {
                     handlers[messageType]
-                        ?.handleMessage(botConfiguration, data, getTimestamp(data))
+                        ?.handleMessage(data, getTimestamp(data))
                         ?.forEach { sendMessage(it) }
                 }
                 catch (e: LoginException) {

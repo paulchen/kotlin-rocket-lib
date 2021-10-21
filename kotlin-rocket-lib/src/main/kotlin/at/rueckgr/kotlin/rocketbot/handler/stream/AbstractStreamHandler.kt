@@ -7,5 +7,5 @@ import com.fasterxml.jackson.databind.JsonNode
 abstract class AbstractStreamHandler(val roomMessageHandler: RoomMessageHandler, val botConfiguration: BotConfiguration) {
     abstract fun getHandledStream(): String
 
-    abstract fun handleStreamMessage(configuration: BotConfiguration, data: JsonNode): List<List<Any>>
+    abstract fun handleStreamMessage(data: JsonNode): List<List<Any>>
 }

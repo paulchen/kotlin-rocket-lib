@@ -11,9 +11,9 @@ class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigurat
         : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
     override fun getHandledMessage() = "result"
 
-    override fun handleMessage(configuration: BotConfiguration, data: JsonNode, timestamp: Long) = when (data.get("id")?.textValue()) {
+    override fun handleMessage(data: JsonNode, timestamp: Long) = when (data.get("id")?.textValue()) {
         "login-initial" -> handleLoginInitial(data)
-        "get-rooms-initial" -> handleGetRoomsResult(configuration.ignoredChannels, data)
+        "get-rooms-initial" -> handleGetRoomsResult(data)
         else -> emptyArray()
     }
 
@@ -29,11 +29,11 @@ class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigurat
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun handleGetRoomsResult(ignoredChannels: List<String>, data: JsonNode): Array<Any> {
+    private fun handleGetRoomsResult(data: JsonNode): Array<Any> {
         val rooms = data.get("result")
         return rooms
             .filter { it.get("t").textValue() == "c" }
-            .filter { !ignoredChannels.contains(it.get("name").textValue()) }
+            .filter { !botConfiguration.ignoredChannels.contains(it.get("name").textValue()) }
             .map {
                 val id = it.get("_id").textValue()
                 SubscribeMessage(id = "subscribe-$id", name = "stream-room-messages", params = arrayOf(id, false))

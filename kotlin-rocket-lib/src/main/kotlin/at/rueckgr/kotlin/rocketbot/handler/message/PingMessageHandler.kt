@@ -14,7 +14,7 @@ class PingMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguratio
 
     override fun getHandledMessage() = "ping"
 
-    override fun handleMessage(configuration: BotConfiguration, data: JsonNode, timestamp: Long): Array<Any> {
+    override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
         lastPing = LocalDateTime.now()
         return arrayOf(PongMessage())
     }

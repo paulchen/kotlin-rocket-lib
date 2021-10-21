@@ -13,14 +13,14 @@ class ConnectedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
     override fun getHandledMessage() = "connected"
 
-    override fun handleMessage(configuration: BotConfiguration, data: JsonNode, timestamp: Long): Array<Any> {
-        val digest = DigestUtils.sha256Hex(configuration.password)
+    override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
+        val digest = DigestUtils.sha256Hex(botConfiguration.password)
         return arrayOf(
             LoginMessage(
                 id = "login-initial",
                 params = arrayOf(
                     WebserviceRequestParam(
-                        UserData(configuration.username),
+                        UserData(botConfiguration.username),
                         PasswordData(digest, "sha-256")
                     )
                 )
