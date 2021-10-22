@@ -48,7 +48,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
     }
 
     private fun isIgnoredRoom(item: JsonNode): Boolean {
-        val roomName = item.get("fname")?.textValue() ?: return true
+        val roomName = item.get("fname")?.textValue() ?: return false // private messages don't have an fname
         if (botConfiguration.ignoredChannels.contains(roomName)) {
             logger().info("Message comes from ignored channel {}, ignoring", roomName)
             return true
