@@ -3,17 +3,16 @@ package at.rueckgr.kotlin.rocketbot.handler.message
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
 import at.rueckgr.kotlin.rocketbot.exception.LoginException
-import at.rueckgr.kotlin.rocketbot.websocket.RoomsGetMessage
 import at.rueckgr.kotlin.rocketbot.websocket.SubscribeMessage
 import com.fasterxml.jackson.databind.JsonNode
 
+@Suppress("unused")
 class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
         : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
     override fun getHandledMessage() = "result"
 
     override fun handleMessage(data: JsonNode, timestamp: Long) = when (data.get("id")?.textValue()) {
         "login-initial" -> handleLoginInitial(data)
-        "get-rooms-initial" -> handleGetRoomsResult(data)
         else -> emptyArray()
     }
 
@@ -23,21 +22,7 @@ class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigurat
         }
         val userId = data.get("result").get("id").textValue()
         return arrayOf(
-            RoomsGetMessage(id = "get-rooms-initial"),
             SubscribeMessage(id = "subscribe-stream-notify-user", name = "stream-notify-user", params = arrayOf("$userId/rooms-changed", false))
         )
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun handleGetRoomsResult(data: JsonNode): Array<Any> {
-        val rooms = data.get("result")
-        return rooms
-            .filter { it.get("t").textValue() == "c" }
-            .filter { !botConfiguration.ignoredChannels.contains(it.get("name").textValue()) }
-            .map {
-                val id = it.get("_id").textValue()
-                SubscribeMessage(id = "subscribe-$id", name = "stream-room-messages", params = arrayOf(id, false))
-            }
-            .toTypedArray()
     }
 }

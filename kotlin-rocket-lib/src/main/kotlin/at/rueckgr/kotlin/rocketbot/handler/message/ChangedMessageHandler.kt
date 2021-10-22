@@ -8,6 +8,7 @@ import at.rueckgr.kotlin.rocketbot.util.logger
 import com.fasterxml.jackson.databind.JsonNode
 import org.reflections.Reflections
 
+@Suppress("unused")
 class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
         : AbstractMessageHandler(roomMessageHandler, botConfiguration), Logging {
     private val handlers: Map<String, AbstractStreamHandler> =
@@ -25,8 +26,8 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
 
     override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
         if (timestamp > 0L) {
-            if (timestamp < newestTimestampSeen) {
-                logger().debug("Timestamp of message ({}) is older than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
+            if (timestamp <= newestTimestampSeen) {
+                logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
                 return emptyArray()
             }
             logger().debug("Updating newest timestamp seen from {} to {}", newestTimestampSeen, timestamp)

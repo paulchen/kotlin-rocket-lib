@@ -147,7 +147,8 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
     private fun getTimestamp(jsonNode: JsonNode): Long {
         val dateNode = jsonNode.get("fields")
             ?.get("args")
-            ?.get(0)
+            ?.get(1)
+            ?.get("lastMessage")
             ?.get("ts")
             ?.get("\$date") ?: return 0L
         if (dateNode.isLong) {

@@ -2,58 +2,86 @@ package at.rueckgr.kotlin.rocketbot.handler.stream
 
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
-import at.rueckgr.kotlin.rocketbot.websocket.SubscribeMessage
+import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.logger
+import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import com.fasterxml.jackson.databind.JsonNode
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
+@Suppress("unused")
 class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractStreamHandler(roomMessageHandler, botConfiguration) {
+        : AbstractStreamHandler(roomMessageHandler, botConfiguration), Logging {
     override fun getHandledStream() = "stream-notify-user"
 
-    @Suppress("UNCHECKED_CAST")
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
-        val args: JsonNode = data.get("fields")?.get("args") ?: return emptyList()
+        val eventNode = data.get("fields")?.get("eventName") ?: return emptyList()
 
-        return when (args.get(0).textValue()) {
-            "inserted" -> handleChannelMessage(args)
-            "updated" -> handleDirectMessage(args)
+        @Suppress("MoveVariableDeclarationIntoWhen")
+        val eventName = eventNode.textValue().split("/")[1]
+        return when (eventName) {
+            "rooms-changed" -> handleRoomsChangedEvent(data)
             else -> emptyList()
         }
     }
 
-    private fun handleChannelMessage(args: JsonNode): List<List<Any>> {
-        val items = ArrayList<JsonNode>()
-        for (i in 1 until args.size()) {
-            items.add(args.get(i))
-        }
+    private fun handleRoomsChangedEvent(data: JsonNode): List<List<Any>> {
+        val args: JsonNode = data.get("fields")?.get("args") ?: return emptyList()
 
-        return items.map {
-            val roomId = it.get("_id")
-
-            if (botConfiguration.ignoredChannels.contains(it.get("fname")?.textValue())) {
-                emptyList()
-            }
-            else {
-                listOf(
-                    SubscribeMessage(
-                        id = UUID.randomUUID().toString(),
-                        name = "stream-room-messages",
-                        params = arrayOf(roomId, false)
-                    )
-                )
-            }
+        return when (args.get(0).textValue()) {
+            "updated" -> handleMessage(args)
+            else -> emptyList()
         }
     }
 
-    private fun handleDirectMessage(args: JsonNode): List<List<Any>> {
+    private fun handleMessage(args: JsonNode): List<List<Any>> {
+
         val items = ArrayList<JsonNode>()
         for (i in 1 until args.size()) {
             items.add(args.get(i))
         }
 
         return items
-            .filter { it.get("t").textValue() == "d" }
-            .map { MessageProcessor.instance.handleStreamMessageItem(roomMessageHandler, botConfiguration, it.get("lastMessage")) }
+            .filter { !isIgnoredRoom(it) }
+            .map { handleStreamMessageItem(it.get("lastMessage")) }
+    }
+
+    private fun isIgnoredRoom(item: JsonNode): Boolean {
+        val roomName = item.get("fname")?.textValue() ?: return true
+        if (botConfiguration.ignoredChannels.contains(roomName)) {
+            logger().info("Message comes from ignored channel {}, ignoring", roomName)
+            return true
+        }
+        return false
+    }
+
+    private fun handleStreamMessageItem(messageNode: JsonNode): List<Any> {
+        val message = messageNode.get("msg").textValue()
+        val roomId = messageNode.get("rid").textValue()
+
+        val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
+        if (StringUtils.isNotBlank(i)) {
+            logger().debug("Message comes from self-declared bot, ignoring")
+            return emptyList()
+        }
+
+        val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
+        return handleUserMessage(roomId, username, message.trim())
+    }
+
+    private fun handleUserMessage(roomId: String, username: String, message: String): List<SendMessageMessage> {
+        if (username == botConfiguration.username) {
+            logger().debug("Message comes from myself, ignoring")
+            return emptyList()
+        }
+
+        return roomMessageHandler
+            .handle(username, message)
+            .map {
+                val id = UUID.randomUUID().toString()
+                val botTag = mapOf("i" to botConfiguration.host)
+                SendMessageMessage(id = id, params = listOf(mapOf("_id" to id, "rid" to roomId, "msg" to it, "bot" to botTag)))
+            }
     }
 }

@@ -9,6 +9,7 @@ import at.rueckgr.kotlin.rocketbot.websocket.WebserviceRequestParam
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.codec.digest.DigestUtils
 
+@Suppress("unused")
 class ConnectedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
         : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
     override fun getHandledMessage() = "connected"
