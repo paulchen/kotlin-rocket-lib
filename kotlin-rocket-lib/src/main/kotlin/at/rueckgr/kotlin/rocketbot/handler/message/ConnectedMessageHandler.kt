@@ -19,6 +19,7 @@ class ConnectedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         val digest = DigestUtils.sha256Hex(botConfiguration.password)
 
         ReconnectWaitService.instance.resetWaitingTime()
+        PingMessageHandler.updateLastPing()
 
         return arrayOf(
             LoginMessage(
