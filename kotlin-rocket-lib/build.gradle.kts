@@ -1,13 +1,13 @@
 val log4jVersion = "2.15.0"
-val ktorVersion = "1.6.4"
-val reflectionsVersion = "0.10.1"
+val ktorVersion = "1.6.7"
+val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.0"
     `java-library`
     `maven-publish`
 }
