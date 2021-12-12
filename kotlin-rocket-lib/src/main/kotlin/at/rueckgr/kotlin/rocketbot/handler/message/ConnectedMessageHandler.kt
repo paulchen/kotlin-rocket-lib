@@ -2,6 +2,7 @@ package at.rueckgr.kotlin.rocketbot.handler.message
 
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
 import at.rueckgr.kotlin.rocketbot.websocket.LoginMessage
 import at.rueckgr.kotlin.rocketbot.websocket.PasswordData
 import at.rueckgr.kotlin.rocketbot.websocket.UserData
@@ -16,6 +17,9 @@ class ConnectedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigu
 
     override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
         val digest = DigestUtils.sha256Hex(botConfiguration.password)
+
+        ReconnectWaitService.instance.resetWaitingTime()
+
         return arrayOf(
             LoginMessage(
                 id = "login-initial",

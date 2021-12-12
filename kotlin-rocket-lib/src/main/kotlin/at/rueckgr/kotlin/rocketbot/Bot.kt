@@ -4,6 +4,7 @@ import at.rueckgr.kotlin.rocketbot.exception.LoginException
 import at.rueckgr.kotlin.rocketbot.exception.TerminateWebsocketClientException
 import at.rueckgr.kotlin.rocketbot.handler.message.AbstractMessageHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.ConnectMessage
 import com.fasterxml.jackson.databind.JsonNode
@@ -41,7 +42,6 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
     }
 
     private suspend fun runWebsocketClient() {
-        var waitingTime = -1
         while (true) {
             try {
                 val client = HttpClient(CIO) {
@@ -67,23 +67,9 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
                 logger().error("Error during (re)connect", e)
             }
 
-            waitingTime = getWaitingTime(waitingTime)
-            logger().info("Waiting $waitingTime seconds")
-
-            delay(waitingTime * 1000L)
+            ReconnectWaitService.instance.wait()
 
             logger().info("Websocket closed, trying to reconnect")
-        }
-    }
-
-    private fun getWaitingTime(oldWaitingTime: Int): Int {
-        val waitingTimes = listOf(5, 10, 30)
-
-        return if (oldWaitingTime == waitingTimes.last()) {
-            waitingTimes.last()
-        }
-        else {
-            waitingTimes[waitingTimes.indexOf(oldWaitingTime) + 1]
         }
     }
 
