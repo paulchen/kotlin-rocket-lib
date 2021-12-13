@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 val log4jVersion = "2.15.0"
 val ktorVersion = "1.6.7"
 val reflectionsVersion = "0.10.2"
@@ -77,13 +79,19 @@ tasks.create("createVersionFile") {
         file.parentFile.parentFile.mkdir()
         file.parentFile.mkdir()
         file.delete()
-        file.outputStream().use { outputStream ->
-            project.exec {
-                commandLine("git", "rev-parse", "--short", "HEAD")
-                standardOutput = outputStream
-            }
-        }
+
+        file.appendText(String.format("revision = %s\n", runGit("git", "rev-parse", "--short", "HEAD")))
+        file.appendText(String.format("commitMessage = %s\n", runGit("git", "log", "-1", "--pretty=%B")))
     }
+}
+
+fun runGit(vararg args: String): String {
+    val outputStream = ByteArrayOutputStream()
+    project.exec {
+        commandLine(*args)
+        standardOutput = outputStream
+    }
+    return outputStream.toString().trim()
 }
 
 tasks.processResources {
