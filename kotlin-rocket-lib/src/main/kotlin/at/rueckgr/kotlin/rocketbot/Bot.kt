@@ -84,8 +84,10 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
 
     private suspend fun DefaultClientWebSocketSession.waitForWebserviceInput() {
         withContext(Dispatchers.IO) {
-            val webserviceInput = webserviceMessageQueue.take()
-            sendMessage(MessageHelper.instance.createSendMessage(webserviceInput.roomId, webserviceInput.message, botConfiguration.botId))
+            while (true) {
+                val webserviceInput = webserviceMessageQueue.take()
+                sendMessage(MessageHelper.instance.createSendMessage(webserviceInput.roomId, webserviceInput.message, botConfiguration.botId))
+            }
         }
     }
 
