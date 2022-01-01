@@ -4,6 +4,7 @@ import at.rueckgr.kotlin.rocketbot.exception.LoginException
 import at.rueckgr.kotlin.rocketbot.exception.TerminateWebsocketClientException
 import at.rueckgr.kotlin.rocketbot.handler.message.AbstractMessageHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.ConnectMessage
@@ -14,20 +15,28 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.reflections.Reflections
+import java.util.concurrent.ArrayBlockingQueue
 
 
-class Bot(private val botConfiguration: BotConfiguration, private val roomMessageHandler: RoomMessageHandler) : Logging {
+class Bot(private val botConfiguration: BotConfiguration,
+          private val roomMessageHandler: RoomMessageHandler,
+          private val webserviceUserValidator: WebserviceUserValidator) : Logging {
+    companion object {
+        val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
+    }
+
     fun start() {
         logger().info(
-            "Configuration: host={}, username={}, ignoredChannels={}",
-            botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels
+            "Configuration: host={}, username={}, ignoredChannels={}, webservicePort={}",
+            botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels, botConfiguration.webservicePort
         )
 
-        val webservice = Webservice(botConfiguration.webservicePort)
+        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator)
         try {
             webservice.start()
         }
@@ -55,9 +64,11 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
                     try {
                         val messageOutputRoutine = async { receiveMessages() }
                         val userInputRoutine = async { sendMessage(ConnectMessage()) }
+                        val webserviceMessageRoutine = async { waitForWebserviceInput() }
 
                         userInputRoutine.await()
                         messageOutputRoutine.await()
+                        webserviceMessageRoutine.await()
                     } catch (e: Exception) {
                         logger().error("Websocket error", e)
                     }
@@ -70,6 +81,16 @@ class Bot(private val botConfiguration: BotConfiguration, private val roomMessag
             ReconnectWaitService.instance.wait()
 
             logger().info("Websocket closed, trying to reconnect")
+        }
+    }
+
+    private suspend fun DefaultClientWebSocketSession.waitForWebserviceInput() {
+        withContext(Dispatchers.IO) {
+            while (true) {
+                val webserviceInput = webserviceMessageQueue.take()
+                sendMessage(MessageHelper.instance.createSendMessage(
+                    webserviceInput.roomId, webserviceInput.message, botConfiguration.botId, webserviceInput.emoji ?: ""))
+            }
         }
     }
 
