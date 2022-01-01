@@ -3,6 +3,7 @@ package at.rueckgr.kotlin.rocketbot.handler.stream
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import com.fasterxml.jackson.databind.JsonNode
@@ -79,9 +80,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         return roomMessageHandler
             .handle(username, message)
             .map {
-                val id = UUID.randomUUID().toString()
-                val botTag = mapOf("i" to botConfiguration.botId)
-                SendMessageMessage(id = id, params = listOf(mapOf("_id" to id, "rid" to roomId, "msg" to it, "bot" to botTag)))
+                MessageHelper.instance.createSendMessage(roomId, it, botConfiguration.botId)
             }
     }
 }

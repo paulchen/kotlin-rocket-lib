@@ -6,12 +6,15 @@ import at.rueckgr.kotlin.rocketbot.util.logger
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.jackson.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.time.LocalDateTime
+
 
 class Webservice(private val webserverPort: Int) : Logging {
     private val warningSeconds = 60L
@@ -33,6 +36,13 @@ class Webservice(private val webserverPort: Int) : Logging {
                 route("/status") {
                     get {
                         call.respond(getStatus())
+                    }
+                }
+                route("/message") {
+                    post {
+                        val message = call.receive<WebserviceMessage>()
+                        Bot.webserviceMessageQueue.add(message)
+                        call.respondText("Message submitted successfully", status = HttpStatusCode.Created)
                     }
                 }
             }
@@ -62,3 +72,8 @@ class Webservice(private val webserverPort: Int) : Logging {
         )
     }
 }
+
+data class WebserviceMessage(
+    val roomId: String,
+    val message: String
+)
