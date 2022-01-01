@@ -88,5 +88,6 @@ class Webservice(private val webserverPort: Int, private val webserviceUserValid
 
 data class WebserviceMessage(
     val roomId: String,
-    val message: String
+    val message: String,
+    val emoji: String?
 )
