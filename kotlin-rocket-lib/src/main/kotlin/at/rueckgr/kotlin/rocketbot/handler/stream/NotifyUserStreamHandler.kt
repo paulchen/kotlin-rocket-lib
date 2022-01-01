@@ -80,7 +80,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
             .handle(username, message)
             .map {
                 val id = UUID.randomUUID().toString()
-                val botTag = mapOf("i" to botConfiguration.host)
+                val botTag = mapOf("i" to botConfiguration.botId)
                 SendMessageMessage(id = id, params = listOf(mapOf("_id" to id, "rid" to roomId, "msg" to it, "bot" to botTag)))
             }
     }
