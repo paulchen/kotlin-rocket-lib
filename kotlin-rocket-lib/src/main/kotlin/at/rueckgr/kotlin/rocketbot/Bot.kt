@@ -23,18 +23,20 @@ import org.reflections.Reflections
 import java.util.concurrent.ArrayBlockingQueue
 
 
-class Bot(private val botConfiguration: BotConfiguration, private val roomMessageHandler: RoomMessageHandler) : Logging {
+class Bot(private val botConfiguration: BotConfiguration,
+          private val roomMessageHandler: RoomMessageHandler,
+          private val webserviceUserValidator: WebserviceUserValidator) : Logging {
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
     }
 
     fun start() {
         logger().info(
-            "Configuration: host={}, username={}, ignoredChannels={}",
-            botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels
+            "Configuration: host={}, username={}, ignoredChannels={}, webservicePort={}",
+            botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels, botConfiguration.webservicePort
         )
 
-        val webservice = Webservice(botConfiguration.webservicePort)
+        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator)
         try {
             webservice.start()
         }
