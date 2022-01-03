@@ -89,7 +89,12 @@ class Bot(private val botConfiguration: BotConfiguration,
             while (true) {
                 val webserviceInput = webserviceMessageQueue.take()
                 sendMessage(MessageHelper.instance.createSendMessage(
-                    webserviceInput.roomId, webserviceInput.message, botConfiguration.botId, webserviceInput.emoji ?: ""))
+                    webserviceInput.roomId,
+                    webserviceInput.message,
+                    botConfiguration.botId,
+                    webserviceInput.emoji ?: "",
+                    webserviceInput.username ?: ""
+                ))
             }
         }
     }
