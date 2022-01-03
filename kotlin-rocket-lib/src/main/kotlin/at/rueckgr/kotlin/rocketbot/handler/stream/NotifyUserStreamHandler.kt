@@ -8,7 +8,6 @@ import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.lang3.StringUtils
-import java.util.*
 import kotlin.collections.ArrayList
 
 @Suppress("unused")
@@ -80,7 +79,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         return roomMessageHandler
             .handle(username, message)
             .map {
-                MessageHelper.instance.createSendMessage(roomId, it, botConfiguration.botId)
+                MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
             }
     }
 }

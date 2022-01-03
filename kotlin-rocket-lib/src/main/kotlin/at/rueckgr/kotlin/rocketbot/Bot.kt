@@ -92,8 +92,8 @@ class Bot(private val botConfiguration: BotConfiguration,
                     webserviceInput.roomId,
                     webserviceInput.message,
                     botConfiguration.botId,
-                    webserviceInput.emoji ?: "",
-                    webserviceInput.username ?: ""
+                    webserviceInput.emoji,
+                    webserviceInput.username
                 ))
             }
         }
