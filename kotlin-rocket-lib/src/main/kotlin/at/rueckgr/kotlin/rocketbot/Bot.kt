@@ -15,12 +15,10 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.reflections.Reflections
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.TimeUnit
 
 
 class Bot(private val botConfiguration: BotConfiguration,
@@ -68,7 +66,7 @@ class Bot(private val botConfiguration: BotConfiguration,
 
                         userInputRoutine.await()
                         messageOutputRoutine.await()
-                        webserviceMessageRoutine.await()
+                        webserviceMessageRoutine.cancelAndJoin()
                     } catch (e: Exception) {
                         logger().error("Websocket error", e)
                     }
@@ -86,8 +84,8 @@ class Bot(private val botConfiguration: BotConfiguration,
 
     private suspend fun DefaultClientWebSocketSession.waitForWebserviceInput() {
         withContext(Dispatchers.IO) {
-            while (true) {
-                val webserviceInput = webserviceMessageQueue.take()
+            while (isActive) {
+                val webserviceInput = webserviceMessageQueue.poll(5, TimeUnit.SECONDS) ?: continue
                 sendMessage(MessageHelper.instance.createSendMessage(
                     webserviceInput.roomId,
                     webserviceInput.message,
