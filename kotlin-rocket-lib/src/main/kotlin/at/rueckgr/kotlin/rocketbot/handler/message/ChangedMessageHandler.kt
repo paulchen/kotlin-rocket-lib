@@ -47,11 +47,11 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
     }
 
     private fun updateRoomNameMapping(data: JsonNode) {
-        val eventName = MessageHelper.instance.getEventName(data)
+        val eventName = MessageHelper.instance.getEventName(data) ?: return
         if (eventName == "rooms-changed") {
-            val roomDetails = data.get("fields").get("args").get(1)
-            val roomId = roomDetails.get("_id").textValue()
-            val roomName = roomDetails.get("name").textValue()
+            val roomDetails = data?.get("fields")?.get("args")?.get(1) ?: return
+            val roomId = roomDetails.get("_id")?.textValue() ?: return
+            val roomName = roomDetails.get("name")?.textValue() ?: return
 
             Bot.knownChannelNamesToIds[roomName] = roomId
         }
