@@ -1,9 +1,11 @@
 package at.rueckgr.kotlin.rocketbot.handler.message
 
+import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
 import at.rueckgr.kotlin.rocketbot.handler.stream.AbstractStreamHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.logger
 import com.fasterxml.jackson.databind.JsonNode
 import org.reflections.Reflections
@@ -25,6 +27,8 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
     override fun getHandledMessage() = "changed"
 
     override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
+        updateRoomNameMapping(data)
+
         if (timestamp > 0L) {
             if (timestamp <= newestTimestampSeen) {
                 logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
@@ -40,5 +44,16 @@ class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigura
             .handleStreamMessage(data)
             .flatten()
             .toTypedArray()
+    }
+
+    private fun updateRoomNameMapping(data: JsonNode) {
+        val eventName = MessageHelper.instance.getEventName(data)
+        if (eventName == "rooms-changed") {
+            val roomDetails = data.get("fields").get("args").get(1)
+            val roomId = roomDetails.get("_id").textValue()
+            val roomName = roomDetails.get("name").textValue()
+
+            Bot.knownChannelNamesToIds[roomName] = roomId
+        }
     }
 }

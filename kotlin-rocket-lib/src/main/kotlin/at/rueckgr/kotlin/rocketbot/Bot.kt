@@ -26,6 +26,7 @@ class Bot(private val botConfiguration: BotConfiguration,
           private val webserviceUserValidator: WebserviceUserValidator) : Logging {
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
+        val knownChannelNamesToIds = HashMap<String, String>()
     }
 
     fun start() {
@@ -87,7 +88,7 @@ class Bot(private val botConfiguration: BotConfiguration,
             while (isActive) {
                 val webserviceInput = webserviceMessageQueue.poll(5, TimeUnit.SECONDS) ?: continue
                 sendMessage(MessageHelper.instance.createSendMessage(
-                    webserviceInput.roomId,
+                    webserviceInput.roomId!!,
                     webserviceInput.message,
                     botConfiguration.botId,
                     webserviceInput.emoji,

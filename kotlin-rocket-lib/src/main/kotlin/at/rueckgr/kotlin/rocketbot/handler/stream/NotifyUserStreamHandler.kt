@@ -16,11 +16,7 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
     override fun getHandledStream() = "stream-notify-user"
 
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
-        val eventNode = data.get("fields")?.get("eventName") ?: return emptyList()
-
-        @Suppress("MoveVariableDeclarationIntoWhen")
-        val eventName = eventNode.textValue().split("/")[1]
-        return when (eventName) {
+        return when (MessageHelper.instance.getEventName(data)) {
             "rooms-changed" -> handleRoomsChangedEvent(data)
             else -> emptyList()
         }

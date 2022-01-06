@@ -1,6 +1,7 @@
 package at.rueckgr.kotlin.rocketbot.util
 
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
+import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
@@ -20,5 +21,10 @@ class MessageHelper {
             params["alias"] = username!!
         }
         return SendMessageMessage(id = id, params = listOf(params))
+    }
+
+    fun getEventName(data: JsonNode): String? {
+        val eventNode = data.get("fields")?.get("eventName") ?: return null
+        return eventNode.textValue().split("/")[1]
     }
 }
