@@ -94,6 +94,8 @@ class Bot(private val botConfiguration: BotConfiguration,
                     webserviceInput.emoji,
                     webserviceInput.username
                 ))
+
+                Thread.sleep(1000L)
             }
         }
     }
