@@ -18,7 +18,9 @@ import org.apache.commons.lang3.StringUtils
 import java.time.LocalDateTime
 
 
-class Webservice(private val webserverPort: Int, private val webserviceUserValidator: WebserviceUserValidator) : Logging {
+class Webservice(private val webserverPort: Int,
+                 private val webserviceUserValidator: WebserviceUserValidator,
+                 private val healthChecker: HealthChecker) : Logging {
     private val warningSeconds = 60L
     private val criticalSeconds = 120L
 
@@ -101,7 +103,8 @@ class Webservice(private val webserverPort: Int, private val webserviceUserValid
         }
 
     private fun getStatus(): Map<String, Any> {
-        val status = if (LocalDateTime.now().minusSeconds(criticalSeconds).isAfter(lastPing)) {
+        val problems = healthChecker.performHealthCheck()
+        val status = if (problems.isNotEmpty() || LocalDateTime.now().minusSeconds(criticalSeconds).isAfter(lastPing)) {
             "CRITICAL"
         } else if (LocalDateTime.now().minusSeconds(warningSeconds).isAfter(lastPing)) {
             "WARNING"
@@ -111,7 +114,8 @@ class Webservice(private val webserverPort: Int, private val webserviceUserValid
 
         return mapOf(
             "status" to status,
-            "lastPing" to lastPing
+            "lastPing" to lastPing,
+            "problems" to problems
         )
     }
 }

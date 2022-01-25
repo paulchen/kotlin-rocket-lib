@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit
 
 class Bot(private val botConfiguration: BotConfiguration,
           private val roomMessageHandler: RoomMessageHandler,
-          private val webserviceUserValidator: WebserviceUserValidator) : Logging {
+          private val webserviceUserValidator: WebserviceUserValidator,
+          private val healthChecker: HealthChecker) : Logging {
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
         val knownChannelNamesToIds = HashMap<String, String>()
@@ -35,7 +36,7 @@ class Bot(private val botConfiguration: BotConfiguration,
             botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels, botConfiguration.webservicePort
         )
 
-        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator)
+        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator, healthChecker)
         try {
             webservice.start()
         }
