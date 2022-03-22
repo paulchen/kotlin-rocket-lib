@@ -1,6 +1,6 @@
 import java.io.ByteArrayOutputStream
 
-val log4jVersion = "2.17.1"
+val log4jVersion = "2.17.2"
 val ktorVersion = "1.6.7"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
@@ -41,7 +41,7 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
 
     implementation("org.slf4j:slf4j-api:1.7.36")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
