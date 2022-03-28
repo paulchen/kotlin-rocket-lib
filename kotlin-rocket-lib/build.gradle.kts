@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 val log4jVersion = "2.17.2"
-val ktorVersion = "1.6.7"
+val ktorVersion = "1.6.8"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
