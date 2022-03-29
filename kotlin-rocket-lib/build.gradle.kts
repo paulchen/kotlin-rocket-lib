@@ -44,8 +44,7 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
     // CVE-2020-36518 - remove when updating to 2.13.3 or 2.14.0
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.1")
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.13.2.20220324"))
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
 
     implementation("org.slf4j:slf4j-api:1.7.36")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
