@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import org.reflections.Reflections
 import java.util.concurrent.ArrayBlockingQueue
@@ -59,6 +59,7 @@ class Bot(private val botConfiguration: BotConfiguration,
                 client.wss(
                     method = HttpMethod.Get,
                     host = botConfiguration.host,
+                    port = 443,
                     path = "/websocket"
                 ) {
                     try {
