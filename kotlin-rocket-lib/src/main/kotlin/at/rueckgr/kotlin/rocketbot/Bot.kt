@@ -59,7 +59,6 @@ class Bot(private val botConfiguration: BotConfiguration,
                 client.wss(
                     method = HttpMethod.Get,
                     host = botConfiguration.host,
-                    port = 443,
                     path = "/websocket"
                 ) {
                     try {
