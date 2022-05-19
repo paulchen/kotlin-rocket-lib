@@ -57,23 +57,23 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         val roomId = messageNode.get("rid").textValue()
 
         val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
-        if (StringUtils.isNotBlank(i)) {
-            logger().debug("Message comes from self-declared bot, ignoring")
-            return emptyList()
+        val botMessage = StringUtils.isNotBlank(i)
+        if (botMessage) {
+            logger().debug("Message comes from self-declared bot")
         }
 
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
-        return handleUserMessage(roomId, username, message.trim())
+        return handleUserMessage(roomId, username, message.trim(), botMessage)
     }
 
-    private fun handleUserMessage(roomId: String, username: String, message: String): List<SendMessageMessage> {
+    private fun handleUserMessage(roomId: String, username: String, message: String, botMessage: Boolean): List<SendMessageMessage> {
         if (username == botConfiguration.username) {
             logger().debug("Message comes from myself, ignoring")
             return emptyList()
         }
 
         return roomMessageHandler
-            .handle(username, message)
+            .handle(username, message, botMessage)
             .map {
                 MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
             }
