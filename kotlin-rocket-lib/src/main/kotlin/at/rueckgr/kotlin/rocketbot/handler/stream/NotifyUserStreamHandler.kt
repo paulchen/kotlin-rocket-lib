@@ -40,11 +40,13 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
 
         return items
             .filter { !isIgnoredRoom(it) }
-            .map { handleStreamMessageItem(it.get("lastMessage")) }
+            .map { handleStreamMessageItem(it) }
     }
 
+    private fun getRoomName(item: JsonNode) = item.get("fname")?.textValue()
+
     private fun isIgnoredRoom(item: JsonNode): Boolean {
-        val roomName = item.get("fname")?.textValue() ?: return false // private messages don't have an fname
+        val roomName = getRoomName(item) ?: return false // private messages don't have an fname
         if (botConfiguration.ignoredChannels.contains(roomName)) {
             logger().info("Message comes from ignored channel {}, ignoring", roomName)
             return true
@@ -52,9 +54,12 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         return false
     }
 
-    private fun handleStreamMessageItem(messageNode: JsonNode): List<Any> {
-        val message = messageNode.get("msg").textValue()
+    private fun handleStreamMessageItem(item: JsonNode): List<SendMessageMessage> {
+        val messageNode = item.get("lastMessage")
+
+        val messageText = messageNode.get("msg").textValue().trim()
         val roomId = messageNode.get("rid").textValue()
+        val roomName = getRoomName(item)
 
         val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
         val botMessage = StringUtils.isNotBlank(i)
@@ -63,19 +68,29 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
         }
 
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
-        return handleUserMessage(roomId, username, message.trim(), botMessage)
-    }
+        val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
 
-    private fun handleUserMessage(roomId: String, username: String, message: String, botMessage: Boolean): List<SendMessageMessage> {
         if (username == botConfiguration.username) {
             logger().debug("Message comes from myself, ignoring")
             return emptyList()
         }
 
+        val channelType = mapChannelType(item.get("t")?.textValue())
+
+        val channel = RoomMessageHandler.Channel(roomId, roomName, channelType)
+        val user = RoomMessageHandler.User(userId, username)
+        val message = RoomMessageHandler.Message(messageText, botMessage)
+
         return roomMessageHandler
-            .handle(username, message, botMessage)
+            .handle(channel, user, message)
             .map {
                 MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
             }
+    }
+
+    private fun mapChannelType(t: String?) = when (t) {
+        "c" -> RoomMessageHandler.ChannelType.CHANNEL
+        "d" -> RoomMessageHandler.ChannelType.DIRECT
+        else -> RoomMessageHandler.ChannelType.OTHER
     }
 }
