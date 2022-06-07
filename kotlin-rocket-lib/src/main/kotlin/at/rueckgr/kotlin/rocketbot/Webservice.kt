@@ -1,6 +1,5 @@
 package at.rueckgr.kotlin.rocketbot
 
-import at.rueckgr.kotlin.rocketbot.handler.message.PingMessageHandler.Companion.lastPing
 import at.rueckgr.kotlin.rocketbot.util.Logging
 import at.rueckgr.kotlin.rocketbot.util.logger
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -15,15 +14,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import org.apache.commons.lang3.StringUtils
-import java.time.LocalDateTime
 
 
 class Webservice(private val webserverPort: Int,
                  private val webserviceUserValidator: WebserviceUserValidator,
-                 private val healthChecker: HealthChecker) : Logging {
-    private val warningSeconds = 60L
-    private val criticalSeconds = 120L
-
+                 private val statusService: StatusService) : Logging {
     private var engine: NettyApplicationEngine? = null
 
     fun start() {
@@ -45,7 +40,7 @@ class Webservice(private val webserverPort: Int,
             routing {
                 route("/status") {
                     get {
-                        call.respond(getStatus())
+                        call.respond(statusService.getStatus())
                     }
                 }
                 authenticate("basic-auth") {
@@ -101,23 +96,6 @@ class Webservice(private val webserverPort: Int,
             true -> UserIdPrincipal(credentials.name)
             false -> null
         }
-
-    private fun getStatus(): Map<String, Any> {
-        val problems = healthChecker.performHealthCheck()
-        val status = if (problems.isNotEmpty() || LocalDateTime.now().minusSeconds(criticalSeconds).isAfter(lastPing)) {
-            "CRITICAL"
-        } else if (LocalDateTime.now().minusSeconds(warningSeconds).isAfter(lastPing)) {
-            "WARNING"
-        } else {
-            "OK"
-        }
-
-        return mapOf(
-            "status" to status,
-            "lastPing" to lastPing,
-            "problems" to problems
-        )
-    }
 }
 
 data class WebserviceMessage(

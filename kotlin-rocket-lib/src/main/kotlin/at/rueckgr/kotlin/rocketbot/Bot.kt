@@ -28,15 +28,18 @@ class Bot(private val botConfiguration: BotConfiguration,
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
         val knownChannelNamesToIds = HashMap<String, String>()
+        val statusService = StatusService()
     }
 
     fun start() {
+        statusService.healthChecker = this.healthChecker
+
         logger().info(
             "Configuration: host={}, username={}, ignoredChannels={}, webservicePort={}",
             botConfiguration.host, botConfiguration.username, botConfiguration.ignoredChannels, botConfiguration.webservicePort
         )
 
-        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator, healthChecker)
+        val webservice = Webservice(botConfiguration.webservicePort, webserviceUserValidator, statusService)
         try {
             webservice.start()
         }
