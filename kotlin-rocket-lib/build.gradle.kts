@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 val log4jVersion = "2.17.2"
-val ktorVersion = "2.0.1"
+val ktorVersion = "2.0.2"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
@@ -9,8 +9,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.42.0"
