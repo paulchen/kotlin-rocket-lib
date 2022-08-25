@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
-val log4jVersion = "2.17.2"
-val ktorVersion = "2.0.1"
+val log4jVersion = "2.18.0"
+val ktorVersion = "2.1.0"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
@@ -9,8 +9,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
-    kotlin("plugin.serialization") version "1.7.0"
+    kotlin("jvm") version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.10"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -45,9 +45,7 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
-    // CVE-2020-36518 - remove when updating to 2.13.3 or 2.14.0
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
 
     implementation("org.slf4j:slf4j-api:1.7.36")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
