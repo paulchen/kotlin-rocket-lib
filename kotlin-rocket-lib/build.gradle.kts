@@ -82,7 +82,7 @@ publishing {
 
 tasks.create("createVersionFile") {
     doLast {
-        val file = File("kotlin-rocket-lib/build/generated/resources/library-git-revision")
+        val file = File("build/generated/resources/library-git-revision")
         file.parentFile.parentFile.mkdir()
         file.parentFile.mkdir()
         file.delete()
