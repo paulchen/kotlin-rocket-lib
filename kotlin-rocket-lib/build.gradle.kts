@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
-val log4jVersion = "2.18.0"
-val ktorVersion = "2.1.0"
+val log4jVersion = "2.19.0"
+val ktorVersion = "2.1.2"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
@@ -9,8 +9,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.7.10"
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
+    kotlin("plugin.serialization") version "1.7.20"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.42.0"
@@ -45,9 +45,9 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
 
-    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("org.slf4j:slf4j-api:2.0.3")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
