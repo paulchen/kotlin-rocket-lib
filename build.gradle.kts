@@ -13,7 +13,7 @@ plugins {
     kotlin("plugin.serialization") version "1.7.20"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.43.0"
 }
 
 repositories {
@@ -46,6 +46,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
 
     implementation("org.slf4j:slf4j-api:2.0.3")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
