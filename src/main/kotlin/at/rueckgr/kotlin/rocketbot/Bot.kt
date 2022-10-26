@@ -29,6 +29,8 @@ class Bot(private val botConfiguration: BotConfiguration,
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
         val knownChannelNamesToIds = HashMap<String, String>()
         val statusService = StatusService()
+        var userId: String? = null
+        var authToken: String? = null
     }
 
     fun start() {
