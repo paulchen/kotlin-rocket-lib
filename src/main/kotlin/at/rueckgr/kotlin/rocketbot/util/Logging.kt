@@ -15,3 +15,12 @@ fun <T : Any> getClassForLogging(javaClass: Class<T>): Class<*> {
 
 inline fun <reified T : Logging> T.logger(): Logger
         = getLogger(getClassForLogging(T::class.java))
+
+fun Logging.logExceptions(lambda: Logging.() -> Any) {
+    try {
+        lambda.invoke(this)
+    }
+    catch (e: Throwable) {
+        logger().error("Exception occurred", e)
+    }
+}
