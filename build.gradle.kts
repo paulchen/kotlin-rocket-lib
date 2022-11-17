@@ -1,7 +1,8 @@
 import java.io.ByteArrayOutputStream
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 val log4jVersion = "2.19.0"
-val ktorVersion = "2.1.2"
+val ktorVersion = "2.1.3"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
@@ -9,11 +10,21 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.7.20"
-    kotlin("plugin.serialization") version "1.7.20"
+    kotlin("jvm") version "1.7.21"
+    kotlin("plugin.serialization") version "1.7.21"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.43.0"
+    id("com.github.ben-manes.versions") version "0.44.0"
+}
+
+tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+    gradleReleaseChannel = "current"
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        candidate.version.toLowerCase().contains("alpha") || candidate.version.toLowerCase().contains("beta")
+    }
 }
 
 repositories {
@@ -46,8 +57,8 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
 
     implementation("org.slf4j:slf4j-api:2.0.3")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
@@ -55,7 +66,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("commons-codec:commons-codec:${commonsCodecVersion}")
+    implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
     // Use the Kotlin test library.
