@@ -109,7 +109,6 @@ class Bot(private val botConfiguration: BotConfiguration,
     private suspend fun DefaultClientWebSocketSession.sendMessage(message: Any) {
         // TODO implement token refresh
 
-        @Suppress("BlockingMethodInNonBlockingContext")
         val jsonMessage = ObjectMapper().writeValueAsString(message)
         logger().debug("Outgoing message: {}", jsonMessage)
         send(Frame.Text(jsonMessage))
@@ -128,28 +127,32 @@ class Bot(private val botConfiguration: BotConfiguration,
 
         try {
             for (message in incoming) {
-                message as? Frame.Text ?: continue
-                val text = message.readText()
-                logger().debug("Incoming message: {}", text)
+                launch {
+                    if (message !is Frame.Text) {
+                        return@launch
+                    }
+                    val text = message.readText()
+                    logger().debug("Incoming message: {}", text)
 
-                @Suppress("BlockingMethodInNonBlockingContext") val data = ObjectMapper().readTree(text)
-                val messageType = data.get("msg")?.textValue() ?: continue
-                if(messageType !in handlers) {
-                    logger().info("Unknown message type \"{}\", ignoring message", messageType)
-                    continue
-                }
+                    val data = ObjectMapper().readTree(text)
+                    val messageType = data.get("msg")?.textValue() ?: return@launch
+                    if (messageType !in handlers) {
+                        logger().info("Unknown message type \"{}\", ignoring message", messageType)
+                        return@launch
+                    }
 
-                try {
-                    handlers[messageType]
-                        ?.handleMessage(data, getTimestamp(data))
-                        ?.forEach { sendMessage(it) }
-                }
-                catch (e: LoginException) {
-                    logger().error(e.message, e)
-                    throw TerminateWebsocketClientException()
-                }
-                catch (e: Exception) {
-                    logger().error(e.message, e)
+                    try {
+                        handlers[messageType]
+                            ?.handleMessage(data, getTimestamp(data))
+                            ?.forEach { sendMessage(it) }
+                    }
+                    catch (e: LoginException) {
+                        logger().error(e.message, e)
+                        throw TerminateWebsocketClientException()
+                    }
+                    catch (e: Exception) {
+                        logger().error(e.message, e)
+                    }
                 }
             }
 
