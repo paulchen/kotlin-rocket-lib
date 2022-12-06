@@ -10,8 +10,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.7.21"
-    kotlin("plugin.serialization") version "1.7.21"
+    kotlin("jvm") version "1.7.22"
+    kotlin("plugin.serialization") version "1.7.22"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -57,10 +57,10 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
 
-    implementation("org.slf4j:slf4j-api:2.0.3")
+    implementation("org.slf4j:slf4j-api:2.0.5")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
