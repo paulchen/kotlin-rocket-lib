@@ -17,6 +17,7 @@ import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import org.reflections.Reflections
+import java.time.LocalDateTime
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +36,7 @@ class Bot(private val botConfiguration: BotConfiguration,
 
     fun start() {
         statusService.healthChecker = this.healthChecker
+        statusService.startDate = LocalDateTime.now()
 
         logger().info(
             "Configuration: host={}, username={}, ignoredChannels={}, webservicePort={}",

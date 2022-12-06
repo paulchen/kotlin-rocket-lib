@@ -8,25 +8,27 @@ class StatusService {
     private val criticalSeconds = 120L
 
     var healthChecker: HealthChecker? = null
+    var startDate: LocalDateTime? = null
 
     fun getStatus(): Status {
         val problems = healthChecker!!.performHealthCheck()
-        val status = if (problems.isNotEmpty() || LocalDateTime.now().minusSeconds(criticalSeconds).isAfter(
-                PingMessageHandler.lastPing
-            )) {
+        val status = if (problems.isNotEmpty() || LocalDateTime.now().minusSeconds(criticalSeconds).isAfter(PingMessageHandler.lastPing)) {
             BotStatus.CRITICAL
-        } else if (LocalDateTime.now().minusSeconds(warningSeconds).isAfter(PingMessageHandler.lastPing)) {
+        }
+        else if (LocalDateTime.now().minusSeconds(warningSeconds).isAfter(PingMessageHandler.lastPing)) {
             BotStatus.WARNING
-        } else {
+        }
+        else {
             BotStatus.OK
         }
         val additionalStatusInformation = healthChecker!!.getAdditionalStatusInformation()
 
-        return Status(status, PingMessageHandler.lastPing, problems, additionalStatusInformation)
+        return Status(status, startDate, PingMessageHandler.lastPing, problems, additionalStatusInformation)
     }
 
     data class Status(
         val status: BotStatus,
+        val startDate: LocalDateTime?,
         val lastPing: LocalDateTime,
         val problems: List<HealthProblem>,
         val additionalStatusInformation: Map<String, Map<String, String>>
