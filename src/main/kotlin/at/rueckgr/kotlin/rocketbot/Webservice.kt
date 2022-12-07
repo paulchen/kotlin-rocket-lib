@@ -16,6 +16,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import org.apache.commons.lang3.StringUtils
 
 
+@Suppress("ExtractKtorModule")
 class Webservice(private val webserverPort: Int,
                  private val webserviceUserValidator: WebserviceUserValidator,
                  private val statusService: StatusService) : Logging {
@@ -102,8 +103,8 @@ data class WebserviceMessage(
     val roomId: String?,
     val roomName: String?,
     val message: String,
-    val emoji: String?,
-    val username: String?
+    val emoji: String? = null,
+    val username: String? = null
 )
 
 data class ValidationResult(
