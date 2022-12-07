@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 
 
 class Bot(private val botConfiguration: BotConfiguration,
-          private val roomMessageHandler: RoomMessageHandler,
+          private val eventHandler: EventHandler,
           private val webserviceUserValidator: WebserviceUserValidator,
           private val healthChecker: HealthChecker) : Logging {
     companion object {
@@ -121,8 +121,8 @@ class Bot(private val botConfiguration: BotConfiguration,
             .getSubTypesOf(AbstractMessageHandler::class.java)
             .map {
                 it
-                    .getDeclaredConstructor(RoomMessageHandler::class.java, BotConfiguration::class.java)
-                    .newInstance(roomMessageHandler, botConfiguration)
+                    .getDeclaredConstructor(EventHandler::class.java, BotConfiguration::class.java)
+                    .newInstance(eventHandler, botConfiguration)
             }
             .associateBy { it.getHandledMessage() }
 

@@ -1,7 +1,7 @@
 package at.rueckgr.kotlin.rocketbot.handler.stream
 
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
-import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
 import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.logger
@@ -11,8 +11,8 @@ import org.apache.commons.lang3.StringUtils
 import kotlin.collections.ArrayList
 
 @Suppress("unused")
-class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractStreamHandler(roomMessageHandler, botConfiguration), Logging {
+class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+        : AbstractStreamHandler(eventHandler, botConfiguration), Logging {
     override fun getHandledStream() = "stream-notify-user"
 
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
@@ -77,20 +77,20 @@ class NotifyUserStreamHandler(roomMessageHandler: RoomMessageHandler, botConfigu
 
         val channelType = mapChannelType(item.get("t")?.textValue())
 
-        val channel = RoomMessageHandler.Channel(roomId, roomName, channelType)
-        val user = RoomMessageHandler.User(userId, username)
-        val message = RoomMessageHandler.Message(messageText, botMessage)
+        val channel = EventHandler.Channel(roomId, roomName, channelType)
+        val user = EventHandler.User(userId, username)
+        val message = EventHandler.Message(messageText, botMessage)
 
-        return roomMessageHandler
-            .handle(channel, user, message)
+        return eventHandler
+            .handleRoomMessage(channel, user, message)
             .map {
                 MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
             }
     }
 
     private fun mapChannelType(t: String?) = when (t) {
-        "c" -> RoomMessageHandler.ChannelType.CHANNEL
-        "d" -> RoomMessageHandler.ChannelType.DIRECT
-        else -> RoomMessageHandler.ChannelType.OTHER
+        "c" -> EventHandler.ChannelType.CHANNEL
+        "d" -> EventHandler.ChannelType.DIRECT
+        else -> EventHandler.ChannelType.OTHER
     }
 }

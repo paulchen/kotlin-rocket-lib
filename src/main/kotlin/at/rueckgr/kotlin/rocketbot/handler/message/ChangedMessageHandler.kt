@@ -2,7 +2,7 @@ package at.rueckgr.kotlin.rocketbot.handler.message
 
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
-import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.handler.stream.AbstractStreamHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
 import at.rueckgr.kotlin.rocketbot.util.MessageHelper
@@ -11,15 +11,15 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.reflections.Reflections
 
 @Suppress("unused")
-class ChangedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractMessageHandler(roomMessageHandler, botConfiguration), Logging {
+class ChangedMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+        : AbstractMessageHandler(eventHandler, botConfiguration), Logging {
     private val handlers: Map<String, AbstractStreamHandler> =
         Reflections(AbstractStreamHandler::class.java.packageName)
             .getSubTypesOf(AbstractStreamHandler::class.java)
             .map {
                 it
-                    .getDeclaredConstructor(RoomMessageHandler::class.java, BotConfiguration::class.java)
-                    .newInstance(roomMessageHandler, botConfiguration)
+                    .getDeclaredConstructor(EventHandler::class.java, BotConfiguration::class.java)
+                    .newInstance(eventHandler, botConfiguration)
             }
             .associateBy { it.getHandledStream() }
     private var newestTimestampSeen = 0L

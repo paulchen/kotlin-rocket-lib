@@ -1,13 +1,13 @@
 package at.rueckgr.kotlin.rocketbot.handler.message
 
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
-import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.websocket.PongMessage
 import com.fasterxml.jackson.databind.JsonNode
 import java.time.LocalDateTime
 
-class PingMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
+class PingMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+        : AbstractMessageHandler(eventHandler, botConfiguration) {
     companion object {
         var lastPing: LocalDateTime = LocalDateTime.now()
 

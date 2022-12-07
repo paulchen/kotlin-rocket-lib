@@ -1,7 +1,9 @@
 package at.rueckgr.kotlin.rocketbot
 
-interface RoomMessageHandler {
-    fun handle(channel: Channel, user: User, message: Message): List<OutgoingMessage>
+interface EventHandler {
+    fun handleRoomMessage(channel: Channel, user: User, message: Message): List<OutgoingMessage>
+
+    fun botInitialized()
 
     data class Channel(val id: String, val name: String?, val type: ChannelType)
 

@@ -1,7 +1,7 @@
 package at.rueckgr.kotlin.rocketbot.handler.message
 
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
-import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
 import at.rueckgr.kotlin.rocketbot.websocket.LoginMessage
 import at.rueckgr.kotlin.rocketbot.websocket.PasswordData
@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.codec.digest.DigestUtils
 
 @Suppress("unused")
-class ConnectedMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractMessageHandler(roomMessageHandler, botConfiguration) {
+class ConnectedMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+        : AbstractMessageHandler(eventHandler, botConfiguration) {
     override fun getHandledMessage() = "connected"
 
     override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {

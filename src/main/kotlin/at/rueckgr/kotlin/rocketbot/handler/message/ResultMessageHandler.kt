@@ -2,7 +2,7 @@ package at.rueckgr.kotlin.rocketbot.handler.message
 
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
-import at.rueckgr.kotlin.rocketbot.RoomMessageHandler
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.exception.LoginException
 import at.rueckgr.kotlin.rocketbot.util.Logging
 import at.rueckgr.kotlin.rocketbot.util.RestApiClient
@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import java.util.*
 
 @Suppress("unused")
-class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfiguration: BotConfiguration)
-        : AbstractMessageHandler(roomMessageHandler, botConfiguration), Logging {
+class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+        : AbstractMessageHandler(eventHandler, botConfiguration), Logging {
     override fun getHandledMessage() = "result"
 
     override fun handleMessage(data: JsonNode, timestamp: Long) = when (val id = data.get("id")?.textValue()) {
@@ -48,6 +48,8 @@ class ResultMessageHandler(roomMessageHandler: RoomMessageHandler, botConfigurat
             .forEach { Bot.knownChannelNamesToIds[it.get("name").textValue()] = it.get("_id").textValue() }
 
         RestApiClient(this.botConfiguration).updateStatus()
+
+        eventHandler.botInitialized()
 
         return emptyArray()
     }
