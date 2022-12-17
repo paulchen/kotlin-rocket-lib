@@ -30,12 +30,17 @@ class ChangedMessageHandler(eventHandler: EventHandler, botConfiguration: BotCon
         updateRoomNameMapping(data)
 
         if (timestamp > 0L) {
-            if (timestamp <= newestTimestampSeen) {
-                logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
-                return emptyArray()
+            // There may be multiple Websocket events for the same message in a very short timeframe
+            // e.g. in case some other bot automatically adds multiple reactions to the most recent message.
+            // To avoid the message being processed multiple times, we need to synchronize here.
+            synchronized(this) {
+                if (timestamp <= newestTimestampSeen) {
+                    logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
+                    return emptyArray()
+                }
+                logger().debug("Updating newest timestamp seen from {} to {}", newestTimestampSeen, timestamp)
+                newestTimestampSeen = timestamp
             }
-            logger().debug("Updating newest timestamp seen from {} to {}", newestTimestampSeen, timestamp)
-            newestTimestampSeen = timestamp
         }
 
         val collection = data.get("collection")?.textValue() ?: return emptyArray()
