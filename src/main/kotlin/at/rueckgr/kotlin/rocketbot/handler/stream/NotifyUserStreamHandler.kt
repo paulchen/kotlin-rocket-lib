@@ -70,22 +70,22 @@ class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotC
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
         val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
 
-        if (username == botConfiguration.username) {
-            logger().debug("Message comes from myself, ignoring")
-            return emptyList()
-        }
-
         val channelType = mapChannelType(item.get("t")?.textValue())
 
         val channel = EventHandler.Channel(roomId, roomName, channelType)
         val user = EventHandler.User(userId, username)
         val message = EventHandler.Message(messageText, botMessage)
 
-        return eventHandler
-            .handleRoomMessage(channel, user, message)
-            .map {
-                MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
-            }
+        val outgoingMessages = if(username == botConfiguration.username) {
+            logger().debug("Message comes from myself")
+            eventHandler.handleOwnMessage(channel, user, message)
+        }
+        else {
+            eventHandler.handleRoomMessage(channel, user, message)
+        }
+        return outgoingMessages.map {
+            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
+        }
     }
 
     private fun mapChannelType(t: String?) = when (t) {
