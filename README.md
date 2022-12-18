@@ -16,3 +16,6 @@ Finally, create a `main` method in your project, instantiate the class `at.rueck
 there and invoke `start()` on that instance.
 
 Refer to `main.kt` in `kotlin-rocket-bot` for an example on how to do this.
+
+__Important__: This bot handles incoming Rocket.Chat messages asynchronously.
+Therefore, you need to ensure thread-safety in your handlers.  
