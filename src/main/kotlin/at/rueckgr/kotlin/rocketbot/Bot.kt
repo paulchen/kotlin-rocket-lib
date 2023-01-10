@@ -28,6 +28,7 @@ class Bot(private val botConfiguration: BotConfiguration,
           private val healthChecker: HealthChecker) : Logging {
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
+        // TODO subscription: refactor this to maintain a list of subscribed channels: timestamp of newest message, mapping between ids and names
         val knownChannelNamesToIds = HashMap<String, String>()
         val statusService = StatusService()
         var userId: String? = null
@@ -171,8 +172,7 @@ class Bot(private val botConfiguration: BotConfiguration,
     private fun getTimestamp(jsonNode: JsonNode): Long {
         val dateNode = jsonNode.get("fields")
             ?.get("args")
-            ?.get(1)
-            ?.get("lastMessage")
+            ?.get(0)
             ?.get("ts")
             ?.get("\$date") ?: return 0L
         if (dateNode.isLong) {

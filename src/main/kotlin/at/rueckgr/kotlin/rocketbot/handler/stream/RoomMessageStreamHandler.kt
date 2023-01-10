@@ -1,5 +1,6 @@
 package at.rueckgr.kotlin.rocketbot.handler.stream
 
+import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
@@ -8,48 +9,33 @@ import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.lang3.StringUtils
-import kotlin.collections.ArrayList
 
 @Suppress("unused")
-class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
-        : AbstractStreamHandler(eventHandler, botConfiguration), Logging {
-    override fun getHandledStream() = "stream-notify-user"
+class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
+    : AbstractStreamHandler(eventHandler, botConfiguration), Logging {
+    override fun getHandledStream() = "stream-room-messages"
 
+    @Suppress("UNCHECKED_CAST")
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
-        return when (MessageHelper.instance.getEventName(data)) {
-            // TODO subscription: handle this event to maintain subscriptions (subscribe to private conversations; unsubscribe from stuff etc.)
-//            "rooms-changed" -> handleRoomsChangedEvent(data)
-            else -> emptyList()
+        val args = data.get("fields")?.get("args") ?: emptyList()
+
+        args.forEach {
+            println(it)
         }
-    }
-
-    // TODO subscription: clean up here
-    private fun handleRoomsChangedEvent(data: JsonNode): List<List<Any>> {
-        val args: JsonNode = data.get("fields")?.get("args") ?: return emptyList()
-
-        return when (args.get(0).textValue()) {
-            // TODO subscription: insert, remove etc. events?
-            "updated" -> handleMessage(args)
-            else -> emptyList()
-        }
-    }
-
-    private fun handleMessage(args: JsonNode): List<List<Any>> {
-
-        val items = ArrayList<JsonNode>()
-        for (i in 1 until args.size()) {
-            items.add(args.get(i))
-        }
-
-        return items
+        return args
             .filter { !isIgnoredRoom(it) }
             .map { handleStreamMessageItem(it) }
     }
 
-    private fun getRoomName(item: JsonNode) = item.get("fname")?.textValue()
+    private fun getRoomName(item: JsonNode): String {
+        val roomId = item.get("rid").textValue()
+
+        return Bot.knownChannelNamesToIds[roomId] ?: roomId
+    }
 
     private fun isIgnoredRoom(item: JsonNode): Boolean {
-        val roomName = getRoomName(item) ?: return false // private messages don't have an fname
+        // TODO subscription: clean up here
+        val roomName = getRoomName(item) // TODO private messages ?: return false // private messages don't have an fname
         if (botConfiguration.ignoredChannels.contains(roomName)) {
             logger().info("Message comes from ignored channel {}, ignoring", roomName)
             return true
@@ -57,12 +43,11 @@ class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotC
         return false
     }
 
-    private fun handleStreamMessageItem(item: JsonNode): List<SendMessageMessage> {
-        val messageNode = item.get("lastMessage")
-
+    private fun handleStreamMessageItem(messageNode: JsonNode): List<SendMessageMessage> {
+        // TODO subscription: code duplication?
         val messageText = messageNode.get("msg").textValue().trim()
         val roomId = messageNode.get("rid").textValue()
-        val roomName = getRoomName(item)
+        val roomName = getRoomName(messageNode)
 
         val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
         val botMessage = StringUtils.isNotBlank(i)
@@ -73,7 +58,9 @@ class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotC
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
         val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
 
-        val channelType = mapChannelType(item.get("t")?.textValue())
+        // TODO subscription: clean this up
+//        val channelType = mapChannelType(item.get("t")?.textValue())
+        val channelType = EventHandler.ChannelType.CHANNEL
 
         val channel = EventHandler.Channel(roomId, roomName, channelType)
         val user = EventHandler.User(userId, username)
@@ -91,6 +78,7 @@ class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotC
         }
     }
 
+    // TODO subscription: clean this up
     private fun mapChannelType(t: String?) = when (t) {
         "c" -> EventHandler.ChannelType.CHANNEL
         "d" -> EventHandler.ChannelType.DIRECT

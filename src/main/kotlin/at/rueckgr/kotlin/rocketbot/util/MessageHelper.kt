@@ -24,7 +24,6 @@ class MessageHelper {
     }
 
     fun getEventName(data: JsonNode): String? {
-        val eventNode = data.get("fields")?.get("eventName") ?: return null
-        return eventNode.textValue().split("/")[1]
+        return data.get("fields")?.get("eventName")?.textValue()
     }
 }

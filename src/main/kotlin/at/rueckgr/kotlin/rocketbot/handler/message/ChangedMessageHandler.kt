@@ -34,6 +34,7 @@ class ChangedMessageHandler(eventHandler: EventHandler, botConfiguration: BotCon
             // e.g. in case some other bot automatically adds multiple reactions to the most recent message.
             // To avoid the message being processed multiple times, we need to synchronize here.
             synchronized(this) {
+                // TODO subscription: keep newestTimestampSeen per channel
                 if (timestamp <= newestTimestampSeen) {
                     logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
                     return emptyArray()

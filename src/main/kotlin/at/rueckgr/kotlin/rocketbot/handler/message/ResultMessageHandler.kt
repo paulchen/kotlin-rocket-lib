@@ -43,14 +43,20 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
 
     private fun handleGetRoomsResult(data: JsonNode): Array<Any> {
         val rooms = data.get("result")
-        rooms
+        val messages = rooms
+            // TODO subscription: subscribe to private messages as well?
             .filter { it.get("t").textValue() == "c" }
-            .forEach { Bot.knownChannelNamesToIds[it.get("name").textValue()] = it.get("_id").textValue() }
+            .map {
+                val id = it.get("_id").textValue()
+
+                Bot.knownChannelNamesToIds[it.get("name").textValue()] = id
+                SubscribeMessage(id = UUID.randomUUID().toString(), name = "stream-room-messages", params = arrayOf(id, false))
+            }
 
         RestApiClient(this.botConfiguration).updateStatus()
 
         eventHandler.botInitialized()
 
-        return emptyArray()
+        return messages.toTypedArray()
     }
 }
