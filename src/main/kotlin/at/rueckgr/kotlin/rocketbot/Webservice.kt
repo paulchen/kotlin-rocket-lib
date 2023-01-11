@@ -78,11 +78,9 @@ class Webservice(private val webserverPort: Int,
         if (StringUtils.isNotBlank(message.roomId) && StringUtils.isNotBlank(message.roomName)) {
             return ValidationResult("Only of roomId and roomName must be set", HttpStatusCode.BadRequest, message)
         }
-        val roomId = if (StringUtils.isNotBlank(message.roomName)) {
-            if (!Bot.knownChannelNamesToIds.containsKey(message.roomName)) {
-                return ValidationResult("Unknown channel ${message.roomName}", HttpStatusCode.BadRequest, message)
-            }
-            Bot.knownChannelNamesToIds[message.roomName]
+        val roomId = if (message.roomName != null && StringUtils.isNotBlank(message.roomName)) {
+            Bot.subscriptionService.getChannelIdByName(message.roomName)
+                ?: return ValidationResult("Unknown channel ${message.roomName}", HttpStatusCode.BadRequest, message)
         }
         else {
             message.roomId

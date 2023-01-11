@@ -5,6 +5,7 @@ import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.exception.LoginException
 import at.rueckgr.kotlin.rocketbot.util.Logging
+import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.RestApiClient
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.RoomsGetMessage
@@ -17,7 +18,7 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
         : AbstractMessageHandler(eventHandler, botConfiguration), Logging {
     override fun getHandledMessage() = "result"
 
-    override fun handleMessage(data: JsonNode, timestamp: Long) = when (val id = data.get("id")?.textValue()) {
+    override fun handleMessage(data: JsonNode) = when (val id = data.get("id")?.textValue()) {
         "login-initial" -> handleLoginInitial(data)
         "get-rooms-initial" -> handleGetRoomsResult(data)
         else -> {
@@ -37,20 +38,21 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
 
         return arrayOf(
             RoomsGetMessage(id = "get-rooms-initial"),
-            SubscribeMessage(id = "subscribe-stream-notify-user", name = "stream-notify-user", params = arrayOf("$userId/rooms-changed", false))
+            SubscribeMessage(id = "subscribe-stream-notify-user-rooms", name = "stream-notify-user", params = arrayOf("$userId/rooms-changed", false)),
+            SubscribeMessage(id = "subscribe-stream-notify-user-subscriptions", name = "stream-notify-user", params = arrayOf("$userId/subscriptions-changed", false))
         )
     }
 
     private fun handleGetRoomsResult(data: JsonNode): Array<Any> {
         val rooms = data.get("result")
         val messages = rooms
-            // TODO subscription: subscribe to private messages as well?
-            .filter { it.get("t").textValue() == "c" }
-            .map {
+            .filter { MessageHelper.instance.mapChannelType(it.get("t").textValue()) != EventHandler.ChannelType.OTHER }
+            .mapNotNull {
                 val id = it.get("_id").textValue()
+                val name = it.get("name")?.textValue()
+                val type = MessageHelper.instance.mapChannelType(it.get("t").textValue())
 
-                Bot.knownChannelNamesToIds[it.get("name").textValue()] = id
-                SubscribeMessage(id = UUID.randomUUID().toString(), name = "stream-room-messages", params = arrayOf(id, false))
+                Bot.subscriptionService.handleSubscription(id, name, type)
             }
 
         RestApiClient(this.botConfiguration).updateStatus()

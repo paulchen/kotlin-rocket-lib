@@ -7,5 +7,5 @@ import com.fasterxml.jackson.databind.JsonNode
 abstract class AbstractMessageHandler(val eventHandler: EventHandler, val botConfiguration: BotConfiguration) {
     abstract fun getHandledMessage(): String
 
-    abstract fun handleMessage(data: JsonNode, timestamp: Long): Array<Any>
+    abstract fun handleMessage(data: JsonNode): Array<Any>
 }

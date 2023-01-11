@@ -15,7 +15,7 @@ class ConnectedMessageHandler(eventHandler: EventHandler, botConfiguration: BotC
         : AbstractMessageHandler(eventHandler, botConfiguration) {
     override fun getHandledMessage() = "connected"
 
-    override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
+    override fun handleMessage(data: JsonNode): Array<Any> {
         val digest = DigestUtils.sha256Hex(botConfiguration.password)
 
         ReconnectWaitService.instance.resetWaitingTime()

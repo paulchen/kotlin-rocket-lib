@@ -18,7 +18,7 @@ class PingMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfig
 
     override fun getHandledMessage() = "ping"
 
-    override fun handleMessage(data: JsonNode, timestamp: Long): Array<Any> {
+    override fun handleMessage(data: JsonNode): Array<Any> {
         updateLastPing()
         return arrayOf(PongMessage())
     }

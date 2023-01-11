@@ -1,7 +1,7 @@
 package at.rueckgr.kotlin.rocketbot.util
 
+import at.rueckgr.kotlin.rocketbot.EventHandler
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
-import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
@@ -23,7 +23,9 @@ class MessageHelper {
         return SendMessageMessage(id = id, params = listOf(params))
     }
 
-    fun getEventName(data: JsonNode): String? {
-        return data.get("fields")?.get("eventName")?.textValue()
+    fun mapChannelType(t: String?) = when (t) {
+        "c" -> EventHandler.ChannelType.CHANNEL
+        "d" -> EventHandler.ChannelType.DIRECT
+        else -> EventHandler.ChannelType.OTHER
     }
 }

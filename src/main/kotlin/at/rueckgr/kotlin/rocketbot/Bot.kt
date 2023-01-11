@@ -8,7 +8,6 @@ import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.ConnectMessage
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -28,8 +27,7 @@ class Bot(private val botConfiguration: BotConfiguration,
           private val healthChecker: HealthChecker) : Logging {
     companion object {
         val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
-        // TODO subscription: refactor this to maintain a list of subscribed channels: timestamp of newest message, mapping between ids and names
-        val knownChannelNamesToIds = HashMap<String, String>()
+        val subscriptionService = SubscriptionService()
         val statusService = StatusService()
         var userId: String? = null
         var authToken: String? = null
@@ -146,7 +144,7 @@ class Bot(private val botConfiguration: BotConfiguration,
 
                     try {
                         handlers[messageType]
-                            ?.handleMessage(data, getTimestamp(data))
+                            ?.handleMessage(data)
                             ?.forEach { sendMessage(it) }
                     }
                     catch (e: LoginException) {
@@ -167,18 +165,6 @@ class Bot(private val botConfiguration: BotConfiguration,
         catch (e: Exception) {
             logger().error("Error while receiving", e)
         }
-    }
-
-    private fun getTimestamp(jsonNode: JsonNode): Long {
-        val dateNode = jsonNode.get("fields")
-            ?.get("args")
-            ?.get(0)
-            ?.get("ts")
-            ?.get("\$date") ?: return 0L
-        if (dateNode.isLong) {
-            return dateNode.asLong()
-        }
-        return 0L
     }
 }
 

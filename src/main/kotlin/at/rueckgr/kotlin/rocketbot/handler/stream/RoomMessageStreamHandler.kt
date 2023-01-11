@@ -19,24 +19,20 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
         val args = data.get("fields")?.get("args") ?: emptyList()
 
-        args.forEach {
-            println(it)
-        }
         return args
             .filter { !isIgnoredRoom(it) }
             .map { handleStreamMessageItem(it) }
     }
 
-    private fun getRoomName(item: JsonNode): String {
+    private fun getRoomName(item: JsonNode): String? {
         val roomId = item.get("rid").textValue()
 
-        return Bot.knownChannelNamesToIds[roomId] ?: roomId
+        return Bot.subscriptionService.getChannelNameById(roomId)
     }
 
     private fun isIgnoredRoom(item: JsonNode): Boolean {
-        // TODO subscription: clean up here
-        val roomName = getRoomName(item) // TODO private messages ?: return false // private messages don't have an fname
-        if (botConfiguration.ignoredChannels.contains(roomName)) {
+        val roomName = getRoomName(item)
+        if (roomName != null && botConfiguration.ignoredChannels.contains(roomName)) {
             logger().info("Message comes from ignored channel {}, ignoring", roomName)
             return true
         }
@@ -44,10 +40,14 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
     }
 
     private fun handleStreamMessageItem(messageNode: JsonNode): List<SendMessageMessage> {
-        // TODO subscription: code duplication?
         val messageText = messageNode.get("msg").textValue().trim()
         val roomId = messageNode.get("rid").textValue()
         val roomName = getRoomName(messageNode)
+        val timestamp = messageNode.get("ts")?.get("\$date")?.asLong()
+
+        if (isOldMessage(timestamp, roomId)) {
+            return emptyList()
+        }
 
         val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
         val botMessage = StringUtils.isNotBlank(i)
@@ -58,10 +58,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
         val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
 
-        // TODO subscription: clean this up
-//        val channelType = mapChannelType(item.get("t")?.textValue())
-        val channelType = EventHandler.ChannelType.CHANNEL
-
+        val channelType = Bot.subscriptionService.getRoomType(roomId) ?: EventHandler.ChannelType.OTHER
         val channel = EventHandler.Channel(roomId, roomName, channelType)
         val user = EventHandler.User(userId, username)
         val message = EventHandler.Message(messageText, botMessage)
@@ -78,10 +75,30 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         }
     }
 
-    // TODO subscription: clean this up
-    private fun mapChannelType(t: String?) = when (t) {
-        "c" -> EventHandler.ChannelType.CHANNEL
-        "d" -> EventHandler.ChannelType.DIRECT
-        else -> EventHandler.ChannelType.OTHER
+    private fun isOldMessage(timestamp: Long?, roomId: String): Boolean {
+        if (timestamp != null) {
+            // There may be multiple Websocket events for the same message in a very short timeframe
+            // e.g. in case some other bot automatically adds multiple reactions to the most recent message.
+            // To avoid the message being processed multiple times, we need to synchronize here.
+            synchronized(this) {
+                val newestTimestampSeen = Bot.subscriptionService.getNewestTimestampSeen(roomId)
+                if (newestTimestampSeen != null && timestamp <= newestTimestampSeen) {
+                    logger().debug("Timestamp of message ({}) is not newer than newest timestamp seen ({}), ignoring", timestamp, newestTimestampSeen)
+                    return true
+                }
+                logger().debug("Updating newest timestamp seen from {} to {}", newestTimestampSeen, timestamp)
+                Bot.subscriptionService.updateNewestTimestampSeen(roomId, timestamp)
+            }
+        }
+
+        return false
+    }
+
+    private fun getTimestamp(jsonNode: JsonNode): Long {
+        val dateNode = jsonNode.get("fields")?.get("args")?.get(0)?.get("ts")?.get("\$date") ?: return 0L
+        if (dateNode.isLong) {
+            return dateNode.asLong()
+        }
+        return 0L
     }
 }
