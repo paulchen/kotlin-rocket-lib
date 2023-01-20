@@ -2,7 +2,7 @@ import java.io.ByteArrayOutputStream
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 val log4jVersion = "2.19.0"
-val ktorVersion = "2.1.3"
+val ktorVersion = "2.2.2"
 val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
@@ -10,8 +10,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.7.22"
-    kotlin("plugin.serialization") version "1.7.22"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -60,7 +60,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
 
-    implementation("org.slf4j:slf4j-api:2.0.5")
+    implementation("org.slf4j:slf4j-api:2.0.6")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
