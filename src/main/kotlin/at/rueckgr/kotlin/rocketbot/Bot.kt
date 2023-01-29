@@ -87,6 +87,11 @@ class Bot(private val botConfiguration: BotConfiguration,
             ReconnectWaitService.instance.wait()
 
             logger().info("Websocket closed, trying to reconnect")
+
+            // we must clear the list of all channels
+            // to ensure that upon reconnect, the bot
+            // will properly re-subscribe to all channels
+            subscriptionService.reset()
         }
     }
 

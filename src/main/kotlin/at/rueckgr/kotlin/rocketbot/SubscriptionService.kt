@@ -56,6 +56,12 @@ class SubscriptionService : Logging {
     }
 
     fun getRoomType(roomId: String) = channelsById[roomId]?.type
+
+    fun reset() {
+        channelsById.clear()
+        channelsByName.clear()
+        newestTimestampsSeen.clear()
+    }
 }
 
 data class ChannelData(val id: String, val name: String?, val type: EventHandler.ChannelType, val subscriptionId: String)
