@@ -55,7 +55,7 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
                 Bot.subscriptionService.handleSubscription(id, name, type)
             }
 
-        RestApiClient(this.botConfiguration).updateStatus()
+        RestApiClient(botConfiguration.host).updateStatus()
 
         eventHandler.botInitialized()
 

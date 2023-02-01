@@ -31,11 +31,14 @@ class Bot(private val botConfiguration: BotConfiguration,
         val statusService = StatusService()
         var userId: String? = null
         var authToken: String? = null
+        var host: String = ""
     }
 
     fun start() {
         statusService.healthChecker = this.healthChecker
         statusService.startDate = LocalDateTime.now()
+
+        host = botConfiguration.host
 
         logger().info(
             "Configuration: host={}, username={}, ignoredChannels={}, webservicePort={}",
