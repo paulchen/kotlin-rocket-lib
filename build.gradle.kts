@@ -15,6 +15,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.44.0"
+    id("app.cash.licensee") version "1.6.0"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -120,3 +121,11 @@ tasks.publishToMavenLocal {
     // necessary to build sources jar
     dependsOn("build")
 }
+
+licensee {
+    allow("Apache-2.0")
+    allow("MIT")
+
+    allowUrl("http://www.gnu.org/licenses/lgpl-2.1.html")
+}
+
