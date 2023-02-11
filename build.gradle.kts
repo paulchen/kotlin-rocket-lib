@@ -7,7 +7,7 @@ val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
 group = "at.rueckgr.kotlin.rocketbot"
-version = "1.0-SNAPSHOT"
+version = "0.1-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "1.8.0"
@@ -16,6 +16,8 @@ plugins {
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.44.0"
     id("app.cash.licensee") version "1.6.0"
+    id("maven-publish")
+    id("signing")
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -35,6 +37,7 @@ repositories {
 
 java {
     withSourcesJar()
+    withJavadocJar()
 }
 
 sourceSets {
@@ -88,6 +91,45 @@ publishing {
     publications {
         create<MavenPublication>("kotlin-rocket-lib") {
             from(components["java"])
+
+            pom {
+                name.set("kotlin-rocket-lib")
+                description.set("Library for creating Rocket.Chat bots in Kotlin")
+                url.set("https://github.com/paulchen/kotlin-rocket-lib")
+                licenses {
+                    license {
+                        name.set("GPL-3.0")
+                        url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("paulchen")
+                        name.set("Paul Staroch")
+                        email.set("paul@staroch.name")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/paulchen/kotlin-rocket-lib.git")
+                    url.set("https://github.com/paulchen/kotlin-rocket-lib")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = if (version.toString().endsWith("SNAPSHOT")) {
+                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            }
+            else {
+                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            }
+            credentials {
+                username = project.property("OSSRH_USERNAME").toString()
+                password = project.property("OSSRH_PASSWORD").toString()
+            }
         }
     }
 }
@@ -129,3 +171,6 @@ licensee {
     allowUrl("http://www.gnu.org/licenses/lgpl-2.1.html")
 }
 
+signing {
+    sign(publishing.publications["kotlin-rocket-lib"])
+}
