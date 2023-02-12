@@ -7,7 +7,7 @@ val reflectionsVersion = "0.10.2"
 var commonsCodecVersion = "1.15"
 
 group = "at.rueckgr.kotlin.rocketbot"
-version = "0.1.0-SNAPSHOT"
+version = "0.1.0"
 
 plugins {
     kotlin("jvm") version "1.8.0"
