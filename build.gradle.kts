@@ -1,20 +1,21 @@
 import java.io.ByteArrayOutputStream
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
-val log4jVersion = "2.19.0"
-val ktorVersion = "2.2.2"
+val log4jVersion = "2.20.0"
+val ktorVersion = "2.2.3"
 val reflectionsVersion = "0.10.2"
-var commonsCodecVersion = "1.15"
+val commonsCodecVersion = "1.15"
+val jacksonVersion = "2.14.2"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.1-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.8.0"
-    kotlin("plugin.serialization") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.44.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
     id("app.cash.licensee") version "1.6.0"
     id("maven-publish")
     id("signing")
@@ -61,8 +62,8 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
     implementation("org.slf4j:slf4j-api:2.0.6")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
