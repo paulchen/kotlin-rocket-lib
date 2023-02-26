@@ -175,3 +175,8 @@ licensee {
 signing {
     sign(publishing.publications["kotlin-rocket-lib"])
 }
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { !gradle.startParameter.taskNames.contains("publishToMavenLocal") }
+}
+

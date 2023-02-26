@@ -99,7 +99,7 @@ git tag "v$CURRENT_VERSION" || exit 1
 
 sed -i "s/version = \".*\"/version = \"$NEW_VERSION-SNAPSHOT\"/" build.gradle.kts || exit 1
 git add build.gradle.kts || exit 1
-git commit -m "change version to $NEW_VERSION" || exit 1
+git commit -m "change version to $NEW_VERSION-SNAPSHOT" || exit 1
 
 git push || exit 1
 git push origin "v$CURRENT_VERSION" || exit 1
