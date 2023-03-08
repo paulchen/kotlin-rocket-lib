@@ -1,4 +1,4 @@
-name: Build after push
+name: Build
 
 on: [push]
 
