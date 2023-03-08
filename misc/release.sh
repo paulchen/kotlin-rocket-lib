@@ -13,10 +13,10 @@
 # - there are no staged files
 # - the tag to be created exists neither locally nor remotely
 
-DIRECTORY=`dirname "$0"`
+DIRECTORY=$(dirname "$0")
 cd "$DIRECTORY/.."
 
-BRANCH=`git rev-parse --abbrev-ref HEAD`
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [ "$BRANCH" != "master" ]; then
 	echo "Not on branch 'master'"
 	exit 1
@@ -44,42 +44,42 @@ else
 fi
 
 # https://stackoverflow.com/questions/3801321/git-list-only-untracked-files-also-custom-commands
-UNTRACKED_FILES=`git add -A -n | wc -l`
+UNTRACKED_FILES=$(git add -A -n | wc -l)
 if [ "$UNTRACKED_FILES" -ne "0" ]; then
 	echo "There are untracked files"
 	exit 1
 fi
 
-MODIFIED_FILES=`git status --porcelain | grep -c '^ M'`
+MODIFIED_FILES=$(git status --porcelain | grep -c '^ M')
 if [ "$MODIFIED_FILES" -ne "0" ]; then
 	echo "There are modified files"
 	exit 1
 fi
 
 # https://stackoverflow.com/questions/33610682/git-list-of-staged-files
-UNTRACKED_FILES=`git diff --name-only --cached | wc -l`
+UNTRACKED_FILES=$(git diff --name-only --cached | wc -l)
 if [ "$UNTRACKED_FILES" -ne "0" ]; then
 	echo "There are files staged for commit"
 	exit 1
 fi
 
-CURRENT_VERSION=`grep '^version = "[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT"' build.gradle.kts | sed -e 's/^.* "//;s/-SNAPSHOT"$//'`
+CURRENT_VERSION=$(grep '^version = "[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT"' build.gradle.kts | sed -e 's/^.* "//;s/-SNAPSHOT"$//')
 if [ "$CURRENT_VERSION" == "" ]; then
 	echo "Unable to determine current version (not -SNAPSHOT or wrong pattern?)"
 	exit 1
 fi
 echo "Current version: $CURRENT_VERSION"
 
-CURRENT_PATCH=`echo $CURRENT_VERSION | sed -e 's/^.*\.//'`
+CURRENT_PATCH=$(echo $CURRENT_VERSION | sed -e 's/^.*\.//')
 NEW_PATCH=$((CURRENT_PATCH + 1))
 
-WITHOUT_PATCH=`echo $CURRENT_VERSION | sed -e 's/\.[^\.]\+$//'`
+WITHOUT_PATCH=$(echo $CURRENT_VERSION | sed -e 's/\.[^\.]\+$//')
 NEW_VERSION="$WITHOUT_PATCH.$NEW_PATCH"
 
 echo "New version: $NEW_VERSION"
 
-LOCAL_TAG_EXISTS=`git tag -l "v$CURRENT_VERSION" | wc -l`
-REMOTE_TAG_EXISTS=`git ls-remote --tags 2> /dev/null | grep -c "refs/tags/v$CURRENT_VERSION$"`
+LOCAL_TAG_EXISTS=$(git tag -l "v$CURRENT_VERSION" | wc -l)
+REMOTE_TAG_EXISTS=$(git ls-remote --tags 2> /dev/null | grep -c "refs/tags/v$CURRENT_VERSION$")
 if [ "$LOCAL_TAG_EXISTS" -ne "0" ]; then
 	echo "Local tag exists"
 	exit 1
@@ -90,7 +90,7 @@ if [ "$REMOTE_TAG_EXISTS" -ne "0" ]; then
 fi
 
 echo "All checks passed. Hit enter to continue."
-read
+read -r
 
 sed -i "s/version = \".*\"/version = \"$CURRENT_VERSION\"/" build.gradle.kts || exit 1
 git add build.gradle.kts || exit 1
