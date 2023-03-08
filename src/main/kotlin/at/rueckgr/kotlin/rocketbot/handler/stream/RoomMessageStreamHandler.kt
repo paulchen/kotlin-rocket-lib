@@ -93,12 +93,4 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
 
         return false
     }
-
-    private fun getTimestamp(jsonNode: JsonNode): Long {
-        val dateNode = jsonNode.get("fields")?.get("args")?.get(0)?.get("ts")?.get("\$date") ?: return 0L
-        if (dateNode.isLong) {
-            return dateNode.asLong()
-        }
-        return 0L
-    }
 }
