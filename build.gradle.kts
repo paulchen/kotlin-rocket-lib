@@ -17,7 +17,7 @@ plugins {
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.46.0"
     id("app.cash.licensee") version "1.6.0"
-    id("maven-publish")
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
 }
 
@@ -117,20 +117,13 @@ publishing {
             }
         }
     }
+}
 
+nexusPublishing {
     repositories {
-        maven {
-            name = "OSSRH"
-            url = if (version.toString().endsWith("SNAPSHOT")) {
-                uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            }
-            else {
-                uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            }
-            credentials {
-                username = project.property("OSSRH_USERNAME").toString()
-                password = project.property("OSSRH_PASSWORD").toString()
-            }
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
     }
 }
@@ -173,6 +166,10 @@ licensee {
 }
 
 signing {
+    val signingKey = findProperty("signingKey").toString()
+    val signingPassword = findProperty("signingPassword").toString()
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
     sign(publishing.publications["kotlin-rocket-lib"])
 }
 
