@@ -36,7 +36,7 @@ jobs:
   publish:
     name: Publish Artifacts to Sonatype
     needs: [build]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
