@@ -20,5 +20,3 @@ jobs:
         with:
           arguments: |
             build
-            -P OSSRH_USERNAME=
-            -P OSSRH_PASSWORD=
