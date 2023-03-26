@@ -2,7 +2,7 @@ import java.io.ByteArrayOutputStream
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 val log4jVersion = "2.20.0"
-val ktorVersion = "2.2.3"
+val ktorVersion = "2.2.4"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
 val jacksonVersion = "2.14.2"
@@ -27,7 +27,9 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        candidate.version.toLowerCase().contains("alpha") || candidate.version.toLowerCase().contains("beta")
+        candidate.version.toLowerCase().contains("alpha") ||
+                candidate.version.toLowerCase().contains("beta") ||
+                candidate.version.toLowerCase().contains("rc")
     }
 }
 
@@ -65,7 +67,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:2.0.6")
+    implementation("org.slf4j:slf4j-api:2.0.7")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
