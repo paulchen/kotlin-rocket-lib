@@ -40,6 +40,7 @@ tasks.withType<DependencyUpdatesTask> {
 configure<DependencyCheckExtension> {
     format = ReportGenerator.Format.ALL.toString()
     analyzers.assemblyEnabled = false
+    failBuildOnCVSS = 7f
 }
 
 repositories {
