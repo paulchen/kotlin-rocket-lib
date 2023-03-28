@@ -1,5 +1,6 @@
 import java.io.ByteArrayOutputStream
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.20.0"
 val ktorVersion = "2.2.4"
@@ -86,8 +87,13 @@ dependencies {
     api("org.apache.commons:commons-math3:3.6.1")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
 }
 
 publishing {
