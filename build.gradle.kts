@@ -1,5 +1,7 @@
 import java.io.ByteArrayOutputStream
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
+import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.20.0"
@@ -20,6 +22,7 @@ plugins {
     id("app.cash.licensee") version "1.6.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
+    id("org.owasp.dependencycheck") version "8.2.1"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -32,6 +35,11 @@ tasks.withType<DependencyUpdatesTask> {
                 candidate.version.toLowerCase().contains("beta") ||
                 candidate.version.toLowerCase().contains("rc")
     }
+}
+
+configure<DependencyCheckExtension> {
+    format = ReportGenerator.Format.ALL.toString()
+    analyzers.assemblyEnabled = false
 }
 
 repositories {
