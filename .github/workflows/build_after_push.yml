@@ -37,6 +37,7 @@ jobs:
             --failOnCVSS 7
             --enableRetired
       - name: Upload Test results
+        if: always()
         uses: actions/upload-artifact@master
         with:
           name: Dependency check report
