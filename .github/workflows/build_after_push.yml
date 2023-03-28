@@ -1,6 +1,10 @@
 name: Build
 
-on: [push]
+on:
+  push:
+
+  schedule:
+    - cron: '31 0 * * *'
 
 jobs:
   build:
@@ -20,3 +24,20 @@ jobs:
         with:
           arguments: |
             build
+      - name: Dependency check
+        uses: dependency-check/Dependency-Check_Action@main
+        env:
+          JAVA_HOME: /opt/jdk
+        id: Depcheck
+        with:
+          project: 'kotlin-rocket-lib'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+      - name: Upload Test results
+        uses: actions/upload-artifact@master
+        with:
+          name: Dependency check report
+          path: ${{github.workspace}}/reports
