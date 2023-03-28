@@ -25,18 +25,10 @@ jobs:
           arguments: |
             build
       - name: Dependency check
-        uses: dependency-check/Dependency-Check_Action@main
-        env:
-          JAVA_HOME: /opt/jdk
-        id: Depcheck
+        uses: gradle/gradle-build-action@v2
         with:
-          project: 'kotlin-rocket-lib'
-          path: '.'
-          format: 'HTML'
-          args: >
-            --failOnCVSS 7
-            --enableRetired
-            --exclude '**/*-javadoc.jar'
+          arguments: |
+            dependencyCheckAnalyze
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@master
