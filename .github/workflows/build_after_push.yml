@@ -36,4 +36,4 @@ jobs:
           name: Dependency check report
           path: ${{github.workspace}}/build/reports
       - name: Process Gradle dependencies
-        uses: mikepenz/gradle-dependency-submission@master
+        uses: mikepenz/gradle-dependency-submission@v0.8.6
