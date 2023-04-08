@@ -8,16 +8,10 @@ Library for creating Rocket.Chat bots in Kotlin
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d821d9304f0241a1a1d2a5195f83d330)](https://www.codacy.com/gh/paulchen/kotlin-rocket-lib/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paulchen/kotlin-rocket-lib&amp;utm_campaign=Badge_Grade)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+This library is available from
+[Maven Central](https://central.sonatype.com/artifact/at.rueckgr.kotlin.rocketbot/kotlin-rocket-lib).
 
-Add the variables `OSSRH_USERNAME` and `OSSRH_PASSWORD` to your `~/.gradle/gradle.properties`.
-You can leave both empty as long as you do not plan to publish to Maven Central via OSSRH:
-
-```
-OSSRH_USERNAME=
-OSSRH_PASSWORD=
-```
-
-Build this project and publish it to the local Maven repository by running
+You can also build it locally and publish it to the local Maven repository by running
 
 `gradlew publishToMavenLocal`
 
