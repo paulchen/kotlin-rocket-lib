@@ -5,17 +5,17 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.20.0"
-val ktorVersion = "2.2.4"
+val ktorVersion = "2.3.0"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
-val jacksonVersion = "2.14.2"
+val jacksonVersion = "2.15.0"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.2-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.8.10"
-    kotlin("plugin.serialization") version "1.8.10"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.serialization") version "1.8.21"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.46.0"
