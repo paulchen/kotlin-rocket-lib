@@ -11,7 +11,7 @@ val commonsCodecVersion = "1.15"
 val jacksonVersion = "2.15.0"
 
 group = "at.rueckgr.kotlin.rocketbot"
-version = "0.1.2-SNAPSHOT"
+version = "0.1.2"
 
 plugins {
     kotlin("jvm") version "1.8.21"
