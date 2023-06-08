@@ -31,9 +31,9 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        candidate.version.toLowerCase().contains("alpha") ||
-                candidate.version.toLowerCase().contains("beta") ||
-                candidate.version.toLowerCase().contains("rc")
+        candidate.version.lowercase().contains("alpha") ||
+                candidate.version.lowercase().contains("beta") ||
+                candidate.version.lowercase().contains("rc")
     }
 }
 
