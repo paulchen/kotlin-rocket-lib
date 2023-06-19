@@ -41,6 +41,7 @@ configure<DependencyCheckExtension> {
     format = ReportGenerator.Format.ALL.toString()
     analyzers.assemblyEnabled = false
     failBuildOnCVSS = 7f
+    suppressionFile = file("$rootDir/cve-suppressions.xml").toString()
 }
 
 repositories {
