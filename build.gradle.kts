@@ -71,6 +71,9 @@ dependencies {
 
     // CVE-2023-34462
     implementation("io.netty:netty-codec-http2:4.1.94.Final")
+    implementation("io.netty:netty-transport-native-kqueue:4.1.94.Final")
+    implementation("io.netty:netty-transport-native-epoll:4.1.94.Final")
+
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
