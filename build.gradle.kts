@@ -68,6 +68,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+
+    // CVE-2023-34462
+    implementation("io.netty:netty-codec-http2:4.1.94.Final")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
