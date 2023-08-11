@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.20.0"
-val ktorVersion = "2.3.2"
+val ktorVersion = "2.3.3"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.16.0"
 val jacksonVersion = "2.15.2"
@@ -14,8 +14,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.3-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.8.22"
-    kotlin("plugin.serialization") version "1.8.22"
+    kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.47.0"
@@ -70,9 +70,9 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
 
     // CVE-2023-34462
-    implementation("io.netty:netty-codec-http2:4.1.94.Final")
-    implementation("io.netty:netty-transport-native-kqueue:4.1.94.Final")
-    implementation("io.netty:netty-transport-native-epoll:4.1.94.Final")
+    implementation("io.netty:netty-codec-http2:4.1.96.Final")
+    implementation("io.netty:netty-transport-native-kqueue:4.1.96.Final")
+    implementation("io.netty:netty-transport-native-epoll:4.1.96.Final")
 
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -89,7 +89,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.apache.commons:commons-lang3:3.13.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
