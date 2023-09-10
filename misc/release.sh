@@ -25,10 +25,9 @@ fi
 git remote update || exit 1
 
 # https://stackoverflow.com/a/3278427/8569278
-UPSTREAM=${1:-'@{u}'}
 LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse "$UPSTREAM")
-BASE=$(git merge-base @ "$UPSTREAM")
+REMOTE=$(git rev-parse "@{u}")
+BASE=$(git merge-base @ "@{u}")
 
 if [ "$LOCAL" == "$REMOTE" ]; then
 	echo "Local and remote branches are up-to-date"
