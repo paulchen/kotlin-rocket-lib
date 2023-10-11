@@ -70,7 +70,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
 
     // CVE-2023-34462
-    implementation("io.netty:netty-codec-http2:4.1.96.Final")
+    implementation("io.netty:netty-codec-http2:4.1.100.Final")
     implementation("io.netty:netty-transport-native-kqueue:4.1.96.Final")
     implementation("io.netty:netty-transport-native-epoll:4.1.96.Final")
 
