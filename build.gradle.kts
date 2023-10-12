@@ -5,24 +5,25 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.20.0"
-val ktorVersion = "2.3.3"
+val ktorVersion = "2.3.5"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.16.0"
 val jacksonVersion = "2.15.2"
+val nettyVersion = "4.1.100.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.4-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
+    kotlin("plugin.serialization") version "1.9.10"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.47.0"
-    id("app.cash.licensee") version "1.7.0"
+    id("com.github.ben-manes.versions") version "0.49.0"
+    id("app.cash.licensee") version "1.8.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "8.3.1"
+    id("org.owasp.dependencycheck") version "8.4.0"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -70,9 +71,9 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
 
     // CVE-2023-34462
-    implementation("io.netty:netty-codec-http2:4.1.96.Final")
-    implementation("io.netty:netty-transport-native-kqueue:4.1.96.Final")
-    implementation("io.netty:netty-transport-native-epoll:4.1.96.Final")
+    implementation("io.netty:netty-codec-http2:$nettyVersion")
+    implementation("io.netty:netty-transport-native-kqueue:$nettyVersion")
+    implementation("io.netty:netty-transport-native-epoll:$nettyVersion")
 
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -84,7 +85,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("org.slf4j:slf4j-api:2.0.9")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
