@@ -4,26 +4,26 @@ import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
 import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val log4jVersion = "2.20.0"
-val ktorVersion = "2.3.5"
+val log4jVersion = "2.21.1"
+val ktorVersion = "2.3.6"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.16.0"
-val jacksonVersion = "2.15.2"
-val nettyVersion = "4.1.100.Final"
+val jacksonVersion = "2.16.0"
+val nettyVersion = "4.1.101.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.4-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
+    kotlin("jvm") version "1.9.20"
+    kotlin("plugin.serialization") version "1.9.20"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.49.0"
+    id("com.github.ben-manes.versions") version "0.50.0"
     id("app.cash.licensee") version "1.8.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "8.4.0"
+    id("org.owasp.dependencycheck") version "8.4.3"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
