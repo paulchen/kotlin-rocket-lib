@@ -24,3 +24,13 @@ fun Logging.logExceptions(lambda: Logging.() -> Any) {
         logger().error("Exception occurred", e)
     }
 }
+
+fun Logging.handleExceptions(function: () -> Unit) {
+    try {
+        function.invoke()
+    }
+    catch (e: Throwable) {
+        logger().error("Exception occurred: ", e)
+    }
+}
+
