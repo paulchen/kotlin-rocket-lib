@@ -4,26 +4,26 @@ import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
 import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val log4jVersion = "2.21.1"
-val ktorVersion = "2.3.6"
+val log4jVersion = "2.22.0"
+val ktorVersion = "2.3.7"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.16.0"
 val jacksonVersion = "2.16.0"
-val nettyVersion = "4.1.101.Final"
+val nettyVersion = "4.1.104.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.4-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.9.20"
-    kotlin("plugin.serialization") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.50.0"
     id("app.cash.licensee") version "1.8.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "8.4.3"
+    id("org.owasp.dependencycheck") version "9.0.6"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -90,7 +90,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.13.0")
+    implementation("org.apache.commons:commons-lang3:3.14.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
