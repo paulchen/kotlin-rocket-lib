@@ -11,6 +11,7 @@ import at.rueckgr.kotlin.rocketbot.websocket.ConnectMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
@@ -64,6 +65,12 @@ class Bot(private val botConfiguration: BotConfiguration,
             try {
                 val client = HttpClient(CIO) {
                     install(WebSockets)
+                    if (botConfiguration.logRequests) {
+                        install(Logging) {
+                            logger = Logger.DEFAULT
+                            level = LogLevel.ALL
+                        }
+                    }
                 }
                 client.wss(
                     method = HttpMethod.Get,
