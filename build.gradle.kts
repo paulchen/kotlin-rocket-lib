@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.22.1"
-val ktorVersion = "2.3.7"
+val ktorVersion = "2.3.8"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.16.0"
 val jacksonVersion = "2.16.1"
@@ -20,7 +20,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.51.0"
-    id("app.cash.licensee") version "1.8.0"
+    id("app.cash.licensee") version "1.9.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("signing")
     id("org.owasp.dependencycheck") version "9.0.9"
