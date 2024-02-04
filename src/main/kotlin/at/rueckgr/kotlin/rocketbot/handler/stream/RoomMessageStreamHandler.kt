@@ -41,6 +41,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
 
     private fun handleStreamMessageItem(messageNode: JsonNode): List<SendMessageMessage> {
         val messageText = messageNode.get("msg").textValue().trim()
+        val parentMessageId = messageNode.get("tmid")?.textValue()?.trim()
         val roomId = messageNode.get("rid").textValue()
         val roomName = getRoomName(messageNode)
         val timestamp = messageNode.get("ts")?.get("\$date")?.asLong()
@@ -71,7 +72,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
             eventHandler.handleRoomMessage(channel, user, message)
         }
         return outgoingMessages.map {
-            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, it.emoji, it.username)
+            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, parentMessageId, it.username, it.emoji)
         }
     }
 

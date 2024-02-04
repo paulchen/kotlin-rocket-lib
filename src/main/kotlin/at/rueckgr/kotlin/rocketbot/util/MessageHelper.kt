@@ -10,10 +10,13 @@ class MessageHelper {
         val instance = MessageHelper()
     }
 
-    fun createSendMessage(roomId: String, message: String, botId: String, emoji: String? = null, username: String? = null): SendMessageMessage {
+    fun createSendMessage(roomId: String, message: String, botId: String, parentMessageId: String? = null, emoji: String? = null, username: String? = null): SendMessageMessage {
         val id = UUID.randomUUID().toString()
         val botTag = mapOf("i" to botId)
         val params = mutableMapOf("_id" to id, "rid" to roomId, "msg" to message, "bot" to botTag)
+        if (StringUtils.isNotBlank(parentMessageId)) {
+            params["tmid"] = parentMessageId!!
+        }
         if (StringUtils.isNotBlank(emoji)) {
             params["emoji"] = emoji!!
         }
