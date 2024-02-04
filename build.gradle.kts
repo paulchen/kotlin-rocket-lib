@@ -12,7 +12,7 @@ val jacksonVersion = "2.16.1"
 val nettyVersion = "4.1.106.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
-version = "0.1.4-SNAPSHOT"
+version = "0.1.4"
 
 plugins {
     kotlin("jvm") version "1.9.22"
