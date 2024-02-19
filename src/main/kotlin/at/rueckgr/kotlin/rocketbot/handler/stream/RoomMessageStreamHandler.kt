@@ -72,7 +72,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
             eventHandler.handleRoomMessage(channel, user, message)
         }
         return outgoingMessages.map {
-            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, parentMessageId, it.username, it.emoji)
+            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, parentMessageId, it.emoji, it.username)
         }
     }
 
