@@ -86,7 +86,7 @@ class Webservice(private val webserverPort: Int,
             message.roomId
         }
 
-        val validatedMessage = WebserviceMessage(roomId, null, message.message, message.emoji, message.username)
+        val validatedMessage = WebserviceMessage(roomId, null, message.message, message.parentMessageId, message.emoji, message.username)
         return ValidationResult("", HttpStatusCode.OK, validatedMessage)
     }
 
@@ -101,6 +101,7 @@ data class WebserviceMessage(
     val roomId: String?,
     val roomName: String?,
     val message: String,
+    val parentMessageId: String? = null,
     val emoji: String? = null,
     val username: String? = null
 )
