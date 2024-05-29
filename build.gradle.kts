@@ -5,25 +5,25 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.23.1"
-val ktorVersion = "2.3.9"
+val ktorVersion = "2.3.11"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.16.1"
-val jacksonVersion = "2.17.0"
-val nettyVersion = "4.1.108.Final"
+val commonsCodecVersion = "1.17.0"
+val jacksonVersion = "2.17.1"
+val nettyVersion = "4.1.110.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.5-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.51.0"
     id("app.cash.licensee") version "1.11.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "9.1.0"
+    id("org.owasp.dependencycheck") version "9.2.0"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -86,7 +86,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:2.0.12")
+    implementation("org.slf4j:slf4j-api:2.0.13")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
