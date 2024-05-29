@@ -24,3 +24,7 @@ Refer to `main.kt` in `kotlin-rocket-bot` for an example on how to do this.
 
 __Important__: This bot handles incoming Rocket.Chat messages asynchronously.
 Therefore, you need to ensure thread-safety in your handlers.  
+
+## About the build
+
+This product uses the NVD API but is not endorsed or certified by the NVD.

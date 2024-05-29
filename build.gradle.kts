@@ -44,6 +44,7 @@ configure<DependencyCheckExtension> {
     analyzers.assemblyEnabled = false
     failBuildOnCVSS = 7f
     suppressionFile = file("$rootDir/cve-suppressions.xml").toString()
+    nvd.apiKey = System.getenv("NVD_API_KEY")
 }
 
 repositories {
