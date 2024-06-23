@@ -39,7 +39,7 @@ class MessageHelper {
             return ValidationResult("One of roomId and roomName must be set", message)
         }
         if (StringUtils.isNotBlank(message.roomId) && StringUtils.isNotBlank(message.roomName)) {
-            return ValidationResult("Only of roomId and roomName must be set", message)
+            return ValidationResult("Only one of roomId and roomName must be set", message)
         }
         val roomId = if (message.roomName != null && StringUtils.isNotBlank(message.roomName)) {
             Bot.subscriptionService.getChannelIdByName(message.roomName)
