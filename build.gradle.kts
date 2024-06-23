@@ -6,11 +6,11 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.23.1"
-val ktorVersion = "2.3.11"
+val ktorVersion = "2.3.12"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.17.0"
 val jacksonVersion = "2.17.1"
-val nettyVersion = "4.1.110.Final"
+val nettyVersion = "4.1.111.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.5-SNAPSHOT"
