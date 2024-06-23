@@ -1,6 +1,8 @@
 package at.rueckgr.kotlin.rocketbot.util
 
+import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.WebserviceMessage
 import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -31,4 +33,29 @@ class MessageHelper {
         "d" -> EventHandler.ChannelType.DIRECT
         else -> EventHandler.ChannelType.OTHER
     }
+
+    fun validateMessage(message: WebserviceMessage): ValidationResult {
+        if (StringUtils.isBlank(message.roomId) && StringUtils.isBlank(message.roomName)) {
+            return ValidationResult("One of roomId and roomName must be set", message)
+        }
+        if (StringUtils.isNotBlank(message.roomId) && StringUtils.isNotBlank(message.roomName)) {
+            return ValidationResult("Only of roomId and roomName must be set", message)
+        }
+        val roomId = if (message.roomName != null && StringUtils.isNotBlank(message.roomName)) {
+            Bot.subscriptionService.getChannelIdByName(message.roomName)
+                ?: return ValidationResult("Unknown channel ${message.roomName}", message)
+        }
+        else {
+            message.roomId
+        }
+
+        val validatedMessage = WebserviceMessage(roomId, null, message.message, message.parentMessageId, message.emoji, message.username)
+        return ValidationResult("", validatedMessage)
+    }
 }
+
+data class ValidationResult(
+    val validationMessage: String,
+    val webserviceMessage: WebserviceMessage
+)
+
