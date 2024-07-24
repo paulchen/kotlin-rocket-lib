@@ -8,9 +8,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val log4jVersion = "2.23.1"
 val ktorVersion = "2.3.12"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.17.0"
-val jacksonVersion = "2.17.1"
-val nettyVersion = "4.1.111.Final"
+val commonsCodecVersion = "1.17.1"
+val jacksonVersion = "2.17.2"
+val nettyVersion = "4.1.112.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.6-SNAPSHOT"
@@ -24,7 +24,7 @@ plugins {
     id("app.cash.licensee") version "1.11.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "9.2.0"
+    id("org.owasp.dependencycheck") version "10.0.3"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -93,7 +93,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.14.0")
+    implementation("org.apache.commons:commons-lang3:3.15.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
