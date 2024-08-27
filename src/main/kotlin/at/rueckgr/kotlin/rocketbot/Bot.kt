@@ -20,6 +20,7 @@ import org.reflections.Reflections
 import java.time.LocalDateTime
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.time.measureTime
 
 
 class Bot(private val botConfiguration: BotConfiguration,
@@ -145,31 +146,32 @@ class Bot(private val botConfiguration: BotConfiguration,
         try {
             for (message in incoming) {
                 launch {
-                    if (message !is Frame.Text) {
-                        return@launch
-                    }
-                    val text = message.readText()
-                    logger().debug("Incoming message: {}", text)
+                    val duration = measureTime {
+                        if (message !is Frame.Text) {
+                            return@measureTime
+                        }
+                        val text = message.readText()
+                        logger().debug("Incoming message: {}", text)
 
-                    val data = ObjectMapper().readTree(text)
-                    val messageType = data.get("msg")?.textValue() ?: return@launch
-                    if (messageType !in handlers) {
-                        logger().info("Unknown message type \"{}\", ignoring message", messageType)
-                        return@launch
-                    }
+                        val data = ObjectMapper().readTree(text)
+                        val messageType = data.get("msg")?.textValue() ?: return@measureTime
+                        if (messageType !in handlers) {
+                            logger().info("Unknown message type \"{}\", ignoring message", messageType)
+                            return@measureTime
+                        }
 
-                    try {
-                        handlers[messageType]
-                            ?.handleMessage(data)
-                            ?.forEach { sendMessage(it) }
+                        try {
+                            handlers[messageType]
+                                ?.handleMessage(data)
+                                ?.forEach { sendMessage(it) }
+                        } catch (e: LoginException) {
+                            logger().error(e.message, e)
+                            throw TerminateWebsocketClientException()
+                        } catch (e: Exception) {
+                            logger().error(e.message, e)
+                        }
                     }
-                    catch (e: LoginException) {
-                        logger().error(e.message, e)
-                        throw TerminateWebsocketClientException()
-                    }
-                    catch (e: Exception) {
-                        logger().error(e.message, e)
-                    }
+                    logger().info("Elapsed time for processing incoming message: {} ms", duration.inWholeMilliseconds)
                 }
             }
 
