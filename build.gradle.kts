@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val log4jVersion = "2.23.1"
 val ktorVersion = "2.3.12"
+val kotlinVersion = "2.0.20"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.17.1"
 val jacksonVersion = "2.17.2"
@@ -16,8 +17,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.6-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -66,7 +67,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
@@ -88,12 +89,12 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("org.slf4j:slf4j-api:2.0.16")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.15.0")
+    implementation("org.apache.commons:commons-lang3:3.17.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
