@@ -5,13 +5,13 @@ import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
 import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val log4jVersion = "2.23.1"
+val log4jVersion = "2.24.0"
 val ktorVersion = "2.3.12"
 val kotlinVersion = "2.0.20"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.17.1"
 val jacksonVersion = "2.17.2"
-val nettyVersion = "4.1.112.Final"
+val nettyVersion = "4.1.113.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.6-SNAPSHOT"
@@ -25,7 +25,7 @@ plugins {
     id("app.cash.licensee") version "1.11.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "10.0.3"
+    id("org.owasp.dependencycheck") version "10.0.4"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
