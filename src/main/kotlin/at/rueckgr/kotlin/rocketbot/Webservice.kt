@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils
 class Webservice(private val webserverPort: Int,
                  private val webserviceUserValidator: WebserviceUserValidator,
                  private val statusService: StatusService) : Logging {
-    private var engine: NettyApplicationEngine? = null
+    private var engine: EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
 
     fun start() {
         logger().info("Starting webserver on port {}", webserverPort)
