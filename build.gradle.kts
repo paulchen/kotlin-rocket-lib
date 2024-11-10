@@ -14,7 +14,7 @@ val jacksonVersion = "2.18.1"
 val nettyVersion = "4.1.114.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
-version = "0.1.6"
+version = "0.1.7-SNAPSHOT"
 
 plugins {
     kotlin("jvm") version "2.0.21"
