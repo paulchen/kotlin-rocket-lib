@@ -11,7 +11,7 @@ class SubscriptionService : Logging {
     private val channelsByName = HashMap<String, ChannelData>()
     private val newestTimestampsSeen = HashMap<String, Long>()
 
-    fun handleSubscription(channelId: String, channelName: String?, channelType: EventHandler.ChannelType): SubscribeMessage? {
+    fun handleSubscription(channelId: String, channelName: String?, channelType: EventHandler.ChannelType, timestamp: Long): SubscribeMessage? {
         logger().info("Subscribing to channel with id {} and name {}", channelId, channelName)
 
         if (channelsById.contains(channelId)) {
@@ -24,6 +24,7 @@ class SubscriptionService : Logging {
             channelsByName[channelName] = channelData
         }
         channelsById[channelId] = channelData
+        newestTimestampsSeen[channelId] = timestamp
 
         return SubscribeMessage(id = subscriptionId, name = "stream-room-messages", params = arrayOf(channelId, false))
     }

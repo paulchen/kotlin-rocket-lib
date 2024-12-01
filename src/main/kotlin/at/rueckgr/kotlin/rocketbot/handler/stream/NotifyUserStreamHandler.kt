@@ -44,8 +44,9 @@ class NotifyUserStreamHandler(eventHandler: EventHandler, botConfiguration: BotC
                 val channelId = args.get(1).get("rid").textValue()
                 val channelName = args.get(1).get("fname").textValue()
                 val channelType = MessageHelper.instance.mapChannelType(args.get(1).get("t").textValue())
+                val timestamp = args.get(1).get("ts").get("\$date").longValue()
 
-                Bot.subscriptionService.handleSubscription(channelId, channelName, channelType)
+                Bot.subscriptionService.handleSubscription(channelId, channelName, channelType, timestamp)
             }
             .map { listOf(it) }
     }
