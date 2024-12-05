@@ -113,7 +113,6 @@ class Bot(private val botConfiguration: BotConfiguration,
                 sendMessage(MessageHelper.instance.createSendMessage(
                     webserviceInput.roomId!!,
                     webserviceInput.message,
-                    botConfiguration.botId,
                     webserviceInput.parentMessageId,
                     webserviceInput.emoji,
                     webserviceInput.username
