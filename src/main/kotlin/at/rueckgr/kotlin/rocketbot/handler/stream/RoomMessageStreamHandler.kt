@@ -3,6 +3,7 @@ package at.rueckgr.kotlin.rocketbot.handler.stream
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.util.BotDetectionService
 import at.rueckgr.kotlin.rocketbot.util.Logging
 import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.logger
@@ -15,7 +16,6 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
     : AbstractStreamHandler(eventHandler, botConfiguration), Logging {
     override fun getHandledStream() = "stream-room-messages"
 
-    @Suppress("UNCHECKED_CAST")
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
         val args = data.get("fields")?.get("args") ?: emptyList()
 
@@ -39,6 +39,23 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         return false
     }
 
+    private fun checkForBot(messageNode: JsonNode): Boolean {
+        val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
+        val botMessage = StringUtils.isNotBlank(i)
+        if (botMessage) {
+            logger().debug("Message comes from self-declared bot")
+            return true
+        }
+
+        val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
+        if (BotDetectionService(this.botConfiguration).isBot(userId)) {
+            logger().debug("Message comes from user in group 'bot'")
+            return true
+        }
+
+        return false
+    }
+
     private fun handleStreamMessageItem(messageNode: JsonNode): List<SendMessageMessage> {
         val messageText = messageNode.get("msg").textValue().trim()
         val parentMessageId = messageNode.get("tmid")?.textValue()?.trim()
@@ -50,11 +67,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
             return emptyList()
         }
 
-        val i = messageNode.get("bot")?.get("i")?.textValue() ?: ""
-        val botMessage = StringUtils.isNotBlank(i)
-        if (botMessage) {
-            logger().debug("Message comes from self-declared bot")
-        }
+        val botMessage = checkForBot(messageNode)
 
         val username = messageNode.get("u")?.get("username")?.textValue() ?: ""
         val userId = messageNode.get("u")?.get("_id")?.textValue() ?: ""
