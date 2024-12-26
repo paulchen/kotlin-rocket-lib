@@ -50,7 +50,8 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
                 val id = it.get("_id").textValue()
                 val name = it.get("name")?.textValue()
                 val type = MessageHelper.instance.mapChannelType(it.get("t").textValue())
-                val timestamp = it.get("lastMessage")?.get("ts")?.get("\$date")?.longValue() ?: 0L
+                val timestamp = it.get("lastMessage")?.get("ts")?.get("\$date")?.longValue()
+                    ?: it.get("ts").get("\$date").longValue()
 
                 Bot.subscriptionService.handleSubscription(id, name, type, timestamp)
             }
