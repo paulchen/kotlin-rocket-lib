@@ -11,7 +11,6 @@ import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.RoomsGetMessage
 import at.rueckgr.kotlin.rocketbot.websocket.SubscribeMessage
 import com.fasterxml.jackson.databind.JsonNode
-import java.util.*
 
 @Suppress("unused")
 class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConfiguration)
@@ -51,7 +50,7 @@ class ResultMessageHandler(eventHandler: EventHandler, botConfiguration: BotConf
                 val id = it.get("_id").textValue()
                 val name = it.get("name")?.textValue()
                 val type = MessageHelper.instance.mapChannelType(it.get("t").textValue())
-                val timestamp = it.get("lastMessage").get("ts").get("\$date").longValue()
+                val timestamp = it.get("lastMessage")?.get("ts")?.get("\$date")?.longValue() ?: 0L
 
                 Bot.subscriptionService.handleSubscription(id, name, type, timestamp)
             }
