@@ -158,7 +158,7 @@ nexusPublishing {
     }
 }
 
-tasks.create("createVersionFile") {
+tasks.register("createVersionFile") {
     doLast {
         val file = File("build/generated/resources/library-git-revision")
         file.parentFile.parentFile.mkdir()
