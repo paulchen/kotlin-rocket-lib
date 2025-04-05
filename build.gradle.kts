@@ -189,9 +189,9 @@ tasks.publishToMavenLocal {
 
 licensee {
     allow("Apache-2.0")
-    allow("MIT")
 
     allowUrl("http://www.gnu.org/licenses/lgpl-2.1.html")
+    allowUrl("https://opensource.org/license/mit")
 }
 
 signing {
