@@ -161,7 +161,7 @@ nexusPublishing {
 
 tasks.register("createVersionFile") {
     doLast {
-        val file = file("build/generated/resources/git-revision")
+        val file = file("build/generated/resources/library-git-revision")
         Files.createDirectories(file.parentFile.toPath())
         Files.deleteIfExists(file.toPath())
 
