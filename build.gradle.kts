@@ -5,20 +5,20 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
-val log4jVersion = "2.25.0"
-val ktorVersion = "3.2.0"
-val kotlinVersion = "2.1.21"
+val log4jVersion = "2.25.1"
+val ktorVersion = "3.2.2"
+val kotlinVersion = "2.2.0"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.18.0"
-val jacksonVersion = "2.19.1"
-val nettyVersion = "4.2.2.Final"
+val commonsCodecVersion = "1.19.0"
+val jacksonVersion = "2.19.2"
+val nettyVersion = "4.2.3.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.serialization") version "2.1.21"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.52.0"
@@ -94,7 +94,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.17.0")
+    implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
