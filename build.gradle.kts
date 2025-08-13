@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 val log4jVersion = "2.25.1"
-val ktorVersion = "3.2.2"
+val ktorVersion = "3.2.3"
 val kotlinVersion = "2.2.0"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.19.0"
 val jacksonVersion = "2.19.2"
-val nettyVersion = "4.2.3.Final"
+val nettyVersion = "4.2.4.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
