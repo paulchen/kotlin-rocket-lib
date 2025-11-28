@@ -6,26 +6,26 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 val log4jVersion = "2.25.2"
-val ktorVersion = "3.3.1"
-val kotlinVersion = "2.2.20"
+val ktorVersion = "3.3.3"
+val kotlinVersion = "2.2.21"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.19.0"
-val jacksonVersion = "2.20.0"
+val commonsCodecVersion = "1.20.0"
+val jacksonVersion = "2.20.1"
 val nettyVersion = "4.2.7.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.2.20"
-    kotlin("plugin.serialization") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.53.0"
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "12.1.8"
+    id("org.owasp.dependencycheck") version "12.1.9"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -94,7 +94,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.19.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
