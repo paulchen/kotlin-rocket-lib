@@ -195,14 +195,13 @@ licensee {
 }
 
 signing {
-    val signingKey = findProperty("signingKey").toString()
-    val signingPassword = findProperty("signingPassword").toString()
-    useInMemoryPgpKeys(signingKey, signingPassword)
+    isRequired = !gradle.startParameter.taskNames.any { it.contains("publishToMavenLocal") }
 
-    sign(publishing.publications["kotlin-rocket-lib"])
+    if (isRequired) {
+        val signingKey = findProperty("signingKey").toString()
+        val signingPassword = findProperty("signingPassword").toString()
+        useInMemoryPgpKeys(signingKey, signingPassword)
+
+        sign(publishing.publications["kotlin-rocket-lib"])
+    }
 }
-
-tasks.withType<Sign>().configureEach {
-    onlyIf { !gradle.startParameter.taskNames.contains("publishToMavenLocal") }
-}
-
