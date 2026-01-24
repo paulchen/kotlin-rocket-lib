@@ -25,7 +25,7 @@ plugins {
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "12.1.9"
+    id("org.owasp.dependencycheck") version "12.2.0"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
