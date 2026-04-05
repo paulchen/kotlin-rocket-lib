@@ -7,7 +7,7 @@ import java.nio.file.Files
 
 val log4jVersion = "2.25.3"
 val ktorVersion = "3.3.3"
-val kotlinVersion = "2.3.0"
+val kotlinVersion = "2.3.20"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.20.0"
 val jacksonVersion = "2.20.1"
@@ -17,8 +17,8 @@ group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.serialization") version "2.3.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("plugin.serialization") version "2.3.20"
     `java-library`
     `maven-publish`
     id("com.github.ben-manes.versions") version "0.53.0"
