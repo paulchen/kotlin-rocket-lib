@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
-val log4jVersion = "2.25.3"
+val log4jVersion = "2.25.4"
 val ktorVersion = "3.3.3"
 val kotlinVersion = "2.3.20"
 val reflectionsVersion = "0.10.2"
