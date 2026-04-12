@@ -11,7 +11,7 @@ val kotlinVersion = "2.3.20"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.20.0"
 val jacksonVersion = "2.20.1"
-val nettyVersion = "4.2.9.Final"
+val nettyVersion = "4.2.12.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
