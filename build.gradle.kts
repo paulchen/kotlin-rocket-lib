@@ -5,31 +5,33 @@ import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
-val log4jVersion = "2.25.3"
-val ktorVersion = "3.3.3"
-val kotlinVersion = "2.3.20"
+val log4jVersion = "2.26.0"
+val ktorVersion = "3.4.3"
+val kotlinVersion = "2.3.21"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.20.0"
-val jacksonVersion = "2.20.1"
-val nettyVersion = "4.2.9.Final"
+val commonsCodecVersion = "1.22.0"
+val jacksonVersion = "2.21.3"
+val nettyVersion = "4.2.13.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.3.20"
-    kotlin("plugin.serialization") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
+    kotlin("plugin.serialization") version "2.3.21"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "12.2.0"
+    id("org.owasp.dependencycheck") version "12.2.2"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     gradleReleaseChannel = "current"
+    checkConstraints = false
+    checkBuildEnvironmentConstraints = false
 }
 
 tasks.withType<DependencyUpdatesTask> {
@@ -67,9 +69,9 @@ sourceSets {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+//    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+//    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
 
