@@ -6,22 +6,22 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 val log4jVersion = "2.26.1"
-val ktorVersion = "3.5.2"
-val kotlinVersion = "2.4.10"
+val ktorVersion = "3.6.0"
+val kotlinVersion = "2.4.21"
 val reflectionsVersion = "0.10.2"
-val commonsCodecVersion = "1.22.1"
-val jacksonVersion = "2.22.2"
-val nettyVersion = "4.2.17.Final"
+val commonsCodecVersion = "1.23.0"
+val jacksonVersion = "2.22.3"
+val nettyVersion = "4.2.19.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.serialization") version "2.4.10"
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
     `java-library`
     `maven-publish`
-    id("com.github.ben-manes.versions") version "0.61.0"
+    id("io.github.ben-manes.versions") version "0.66.0"
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
@@ -91,12 +91,12 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-    implementation("org.slf4j:slf4j-api:2.0.18")
+    implementation("org.slf4j:slf4j-api:2.0.20")
     api("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion")
 
-    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.apache.commons:commons-lang3:3.21.0")
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("org.reflections:reflections:$reflectionsVersion")
 
