@@ -3,8 +3,12 @@ name: Build
 on:
   push:
 
+  workflow_dispatch:
+
   schedule:
     - cron: '31 0 * * *'
+
+
 
 jobs:
   build:
