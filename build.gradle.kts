@@ -1,7 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
-import org.owasp.dependencycheck.reporting.ReportGenerator
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
@@ -25,7 +23,6 @@ plugins {
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
-    id("org.owasp.dependencycheck") version "13.0.0"
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
@@ -40,14 +37,6 @@ tasks.withType<DependencyUpdatesTask> {
                 candidate.version.lowercase().contains("beta") ||
                 candidate.version.lowercase().contains("rc")
     }
-}
-
-configure<DependencyCheckExtension> {
-    format = ReportGenerator.Format.ALL.toString()
-    analyzers.assemblyEnabled = false
-    failBuildOnCVSS = 7f
-    suppressionFile = file("$rootDir/cve-suppressions.xml").toString()
-    nvd.apiKey = System.getenv("NVD_API_KEY")
 }
 
 repositories {
