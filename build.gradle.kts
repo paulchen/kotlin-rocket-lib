@@ -25,6 +25,10 @@ plugins {
     id("signing")
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     gradleReleaseChannel = "current"
     checkConstraints = false
