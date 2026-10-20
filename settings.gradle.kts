@@ -8,4 +8,3 @@
  */
 
 rootProject.name = "kotlin-rocket-lib"
-include("kotlin-rocket-lib")
