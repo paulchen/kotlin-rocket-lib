@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Set up JDK
         uses: actions/setup-java@v6
         with:
@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew dependencyCheckAnalyze
       - name: Upload Test results
         if: always()
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Dependency check report
           path: ${{github.workspace}}/build/reports
