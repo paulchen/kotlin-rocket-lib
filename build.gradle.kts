@@ -4,12 +4,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
 
 val log4jVersion = "2.26.1"
-val ktorVersion = "3.6.0"
+val ktorVersion = "3.6.1"
 val kotlinVersion = "2.4.21"
 val reflectionsVersion = "0.10.2"
 val commonsCodecVersion = "1.23.0"
-val jacksonVersion = "2.22.3"
-val nettyVersion = "4.2.19.Final"
+val jacksonVersion = "2.23.0"
+val nettyVersion = "4.2.20.Final"
 
 group = "at.rueckgr.kotlin.rocketbot"
 version = "0.1.7-SNAPSHOT"
@@ -19,7 +19,7 @@ plugins {
     kotlin("plugin.serialization") version "2.4.21"
     `java-library`
     `maven-publish`
-    id("io.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.67.0"
     id("app.cash.licensee") version "1.14.1"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("signing")
