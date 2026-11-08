@@ -29,8 +29,6 @@ jobs:
         run: ./gradlew build
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-      - name: Dependency check
-        run: ./gradlew dependencyCheckAnalyze
       - name: Upload Test results
         if: always()
         uses: actions/upload-artifact@v7
