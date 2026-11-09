@@ -13,16 +13,48 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
-        run: >-
-          gh release create "$RELEASE_TAG"
-          --verify-tag
-          --title "$RELEASE_TAG"
-          --generate-notes
+        run: |
+          # Only stable version tags count as previous releases.
+          tag_patterns=()
+          while IFS= read -r tag; do
+            if [[ "$tag" != "$RELEASE_TAG" && "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              tag_patterns+=(--match "$tag")
+            fi
+          done < <(git tag --merged "$RELEASE_TAG")
+
+          previous_tag=""
+          if ((${#tag_patterns[@]})); then
+            previous_tag=$(git describe --tags --abbrev=0 "${tag_patterns[@]}" "$RELEASE_TAG")
+          fi
+
+          notes_file="$RUNNER_TEMP/release-notes.md"
+          repository_url="$GITHUB_SERVER_URL/$GH_REPO"
+          revision_range="$RELEASE_TAG"
+          if [[ -n "$previous_tag" ]]; then
+            revision_range="$previous_tag..$RELEASE_TAG"
+          fi
+
+          {
+            printf '## Commits\n\n'
+            git log --reverse --format="- %s ([%h]($repository_url/commit/%H))" "$revision_range" --
+            if [[ -n "$previous_tag" ]]; then
+              printf '\n**Full Changelog**: [%s...%s](%s/compare/%s...%s)\n' \
+                "$previous_tag" "$RELEASE_TAG" "$repository_url" "$previous_tag" "$RELEASE_TAG"
+            fi
+          } > "$notes_file"
+
+          gh release create "$RELEASE_TAG" \
+            --verify-tag \
+            --title "$RELEASE_TAG" \
+            --notes-file "$notes_file"
   publish:
     name: Publish Artifacts to Sonatype
     runs-on: ubuntu-latest
