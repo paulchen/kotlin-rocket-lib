@@ -2,115 +2,139 @@ package at.rueckgr.kotlin.rocketbot.util
 
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.generated.statistics.api.StatisticsApi
+import at.rueckgr.kotlin.rocketbot.generated.usermanagement.api.RolesApi
+import at.rueckgr.kotlin.rocketbot.generated.usermanagement.api.UsersApi
+import at.rueckgr.kotlin.rocketbot.generated.usermanagement.model.PostApiV1UsersSetStatusRequest
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.runBlocking
 
-class RestApiClient(private val botHost: String) : Logging {
+class RestApiClient internal constructor(
+    private val botHost: String,
+    private val httpEngineFactory: () -> HttpClientEngine,
+) : Logging {
+    constructor(botHost: String) : this(botHost, { CIO.create() })
+
     fun updateStatus() {
-        val response: UsersSetStatusResponse = runBlocking {
-            createHttpClient().post {
-                url(buildUrl("users.setStatus"))
-                headers(buildHeaders())
-                contentType(ContentType.Application.Json)
-                setBody(object {
-                    @Suppress("unused") val message = ""
-                    @Suppress("unused") val status = "online"
-                })
-            }.body()
+        val success = runBlocking {
+            httpEngineFactory().use { engine ->
+                val response = createUsersApi(engine).postApiV1UsersSetStatus(
+                    xUserId = Bot.userId!!,
+                    xAuthToken = Bot.authToken!!,
+                    postApiV1UsersSetStatusRequest = PostApiV1UsersSetStatusRequest(
+                        message = "",
+                        status = "online",
+                    ),
+                )
+                response.success && response.body().success == true
+            }
         }
 
-        if (!response.success) {
+        if (!success) {
             logger().error("Failed to set user status")
         }
     }
 
-    fun getInstanceVersion(): String? {
-        val statisticsResponse: StatisticsResponse = runBlocking {
-            createHttpClient().get {
-                url(buildUrl("statistics"))
-                headers(buildHeaders())
-                contentType(ContentType.Application.Json)
-            }.body()
-        }
-
-        if (!statisticsResponse.success) {
-            logger().error("Failed to get statistics: {}", statisticsResponse.error)
-            return null
-        }
-
-        return statisticsResponse.version
-    }
-
-    fun getUsersByRole(role: String): List<EventHandler.User> {
-        val limit = 50
-        var offset = 0
-
-        val users = mutableListOf<EventHandler.User>()
-        do {
-            val retrievedUsers = getUsersByRole(role, offset, limit)
-            users.addAll(retrievedUsers)
-            offset += limit
-        } while (retrievedUsers.size == limit)
-
-        return users
-    }
-
-    private fun getUsersByRole(role: String, offset: Int, @Suppress("SameParameterValue") limit: Int): List<EventHandler.User> {
-        logger().debug("Invoking roles.getUsersInRole with role {}, limit {}, offset {}", role, offset, limit)
-        val response: UsersListResponse = runBlocking {
-            try {
-                createHttpClient().get {
-                    url {
-                        url(buildUrl("roles.getUsersInRole"))
-                        parameter("role", role)
-                        parameter("limit", limit)
-                        parameter("offset", offset)
-                    }
-                    headers(buildHeaders())
-                    contentType(ContentType.Application.Json)
-                }.body()
+    fun getInstanceVersion(): String? = runBlocking {
+        httpEngineFactory().use { engine ->
+            val response = createStatisticsApi(engine).getApiV1Statistics(
+                xAuthToken = Bot.authToken!!,
+                xUserId = Bot.userId!!,
+            )
+            if (!response.success) {
+                logger().error("Failed to get statistics (HTTP {}): {}", response.status, response.response.bodyAsText())
+                return@runBlocking null
             }
-            catch (e: Exception) {
-                logger().error(e.message)
-                UsersListResponse(emptyList(), false, e.message)
+            val statistics = response.body()
+            if (statistics.success != true) {
+                logger().error("Failed to get statistics: {}", response.response.bodyAsText())
+                return@runBlocking null
             }
+            statistics.version
         }
-
-        if (!response.success || response.users == null) {
-            logger().error("Failed to get list of users with role {} (limit {}, offset {}), error: {}", role, limit, offset, response.error)
-            return emptyList()
-        }
-
-        return response.users.map { EventHandler.User(it._id, it.username) }
     }
 
-    private fun buildHeaders(): HeadersBuilder.() -> Unit = {
-        append("X-Auth-Token", Bot.authToken!!)
-        append("X-User-Id", Bot.userId!!)
+    fun getUsersByRole(role: String): List<EventHandler.User> = runBlocking {
+        httpEngineFactory().use { engine ->
+            val api = createRolesApi(engine)
+            val limit = 50
+            var offset = 0
+            val users = mutableListOf<EventHandler.User>()
+            do {
+                val retrievedUsers = getUsersByRole(api, role, offset, limit)
+                users.addAll(retrievedUsers)
+                offset += limit
+            } while (retrievedUsers.size == limit)
+            users
+        }
     }
 
-    private fun createHttpClient() = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            jackson {
-                disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    private suspend fun getUsersByRole(api: RolesApi, role: String, offset: Int, limit: Int): List<EventHandler.User> {
+        return try {
+            val response = api.getApiV1RolesGetUsersInRole(
+                role = role,
+                xUserId = Bot.userId!!,
+                xAuthToken = Bot.authToken!!,
+                offset = offset,
+                count = limit,
+            )
+            if (!response.success) {
+                logger().error(
+                    "Failed to get list of users with role {} (limit {}, offset {}), HTTP {}: {}",
+                    role, limit, offset, response.status, response.response.bodyAsText(),
+                )
+                return emptyList()
             }
+            val result = response.body()
+            val users = result.users
+            if (result.success != true || users == null) {
+                logger().error(
+                    "Failed to get list of users with role {} (limit {}, offset {}): {}",
+                    role, limit, offset, response.response.bodyAsText(),
+                )
+                return emptyList()
+            }
+            users.map { EventHandler.User(requireNotNull(it.id), requireNotNull(it.username)) }
+        }
+        catch (e: Exception) {
+            logger().error("Failed to get list of users with role {} (limit {}, offset {})", role, limit, offset, e)
+            emptyList()
         }
     }
 
-    private fun buildUrl(endpoint: String) = "https://$botHost/api/v1/$endpoint"
+    private fun createUsersApi(engine: HttpClientEngine) = UsersApi(
+        baseUrl = "https://$botHost",
+        httpClientEngine = engine,
+        httpClientConfig = { it.configureRequestLogging() },
+        jsonBlock = { configureJson() },
+    )
 
-    data class UsersSetStatusResponse(val success: Boolean)
+    private fun createRolesApi(engine: HttpClientEngine) = RolesApi(
+        baseUrl = "https://$botHost",
+        httpClientEngine = engine,
+        httpClientConfig = { it.configureRequestLogging() },
+        jsonBlock = { configureJson() },
+    )
 
-    data class StatisticsResponse(val version: String?, val success: Boolean, val error: String?)
+    private fun createStatisticsApi(engine: HttpClientEngine) = StatisticsApi(
+        baseUrl = "https://$botHost",
+        httpClientEngine = engine,
+        httpClientConfig = { it.configureRequestLogging() },
+        jsonBlock = { configureJson() },
+    )
 
-    data class UsersListResponse(val users: List<RestUser>?, val success: Boolean, val error: String?)
+    private fun ObjectMapper.configureJson() {
+        disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
+    }
 
-    data class RestUser(val _id: String, val username: String, val name: String)
+    private fun HttpClientConfig<*>.configureRequestLogging() {
+        install(RestApiLogging)
+    }
 }
