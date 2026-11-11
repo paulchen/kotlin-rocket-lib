@@ -38,6 +38,7 @@ val rocketChatOpenApiCommit = "f920bb9c701aa12ea03e040a50566e3689c63d59"
 val rocketChatOpenApiChecksums = mapOf(
     "user-management.yaml" to "c1d3d49b18972eed5b7a4942dd9fdbf763f9ef4a9c6d674e56f6a733deca62eb",
     "statistics.yaml" to "edb959e0b056597ecf0bc168659a6b38bab27a18fab3555c13dc1f43df937a7f",
+    "messaging.yaml" to "0aca8e78413cdc1c26c962a97c92098a48acf79353dfcacc3a6bd786bc51c0e3",
 )
 
 val downloadRocketChatSpecTasks = rocketChatOpenApiChecksums.map { (filename, checksum) ->
@@ -93,6 +94,7 @@ val generateRocketChatClients = rocketChatOpenApiChecksums.keys.map { filename -
         dependsOn(downloadRocketChatSpecs)
         generatorName.set("kotlin")
         library.set("jvm-ktor")
+        typeMappings.put("integer", "kotlin.Long")
         inputSpec.set(layout.buildDirectory.file("openapi/$filename"))
         outputDir.set(generatedDirectory)
         packageName.set(packageRoot)
@@ -106,6 +108,9 @@ val generateRocketChatClients = rocketChatOpenApiChecksums.keys.map { filename -
             openapiNormalizer.set(mapOf(
                 "FILTER" to "operationId:post-api-v1-users.setStatus|get-api-v1-roles.getUsersInRole",
             ))
+        }
+        if (filename == "messaging.yaml") {
+            openapiNormalizer.set(mapOf("FILTER" to "operationId:post-api-v1-chat.sendMessage"))
         }
         configOptions.set(mapOf(
             "serializationLibrary" to "jackson",

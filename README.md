@@ -27,7 +27,7 @@ Therefore, you need to ensure thread-safety in your handlers.
 
 ## About the build
 
-`./gradlew downloadRocketChatSpecs` downloads `user-management.yaml` and `statistics.yaml`
+`./gradlew downloadRocketChatSpecs` downloads `user-management.yaml`, `statistics.yaml`, and `messaging.yaml`
 from [Rocket.Chat's OpenAPI repository](https://github.com/RocketChat/Rocket.Chat-Open-API)
 into `build/openapi/`. The `build` task also runs
 this task automatically. Existing, unchanged outputs are reused by Gradle.
@@ -36,14 +36,15 @@ together when upgrading the definitions. A fresh build requires network access.
 
 The Kotlin/Ktor clients are generated into `build/generated/openapi/` before Kotlin
 compilation and when building the sources JAR. Run
-`./gradlew generateRocketChatUserManagementClient generateRocketChatStatisticsClient`
+`./gradlew generateRocketChatUserManagementClient generateRocketChatStatisticsClient generateRocketChatMessagingClient`
 to generate them explicitly. Generated types are internal implementation details;
 `RestApiClient` remains the public facade and uses the generated clients for
-`users.setStatus`, `roles.getUsersInRole`, and `statistics`. For user management,
+`users.setStatus`, `roles.getUsersInRole`, `statistics`, and `chat.sendMessage`. For user management,
 only the two migrated endpoints are currently generated. Other endpoints can be enabled in the
 generator's operation filter as they are migrated. `skipFormModel=false` ensures
 multipart models referenced by generated APIs are included. Generating the entire
 user-management definition still produces invalid Kotlin for the `selector` query
 parameter of `users.autocomplete` (`forEach` called on `Any`).
+For messaging, only `chat.sendMessage` is currently generated.
 
 This product uses the NVD API but is not endorsed or certified by the NVD.

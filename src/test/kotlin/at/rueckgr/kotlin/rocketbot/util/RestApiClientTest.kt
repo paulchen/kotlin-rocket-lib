@@ -2,6 +2,8 @@ package at.rueckgr.kotlin.rocketbot.util
 
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.MessageQueueItem
+import java.io.IOException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -199,12 +201,101 @@ class RestApiClientTest {
         assertEquals(1, errors.size)
     }
 
+    @Test
+    fun `send message maps all queue item fields into the nested REST body`() {
+        val item = MessageQueueItem(
+            roomId = "room-1", roomName = null, message = "Hello \"world\"\nnext line",
+            parentMessageId = "parent-1", emoji = ":robot:", username = "My Bot",
+        )
+        withResponse(
+            """{"success":true,"message":{"_id":"sent-1"}}""",
+            invokeClient = { assertTrue(it.sendMessage(item)) },
+        ) { request ->
+            assertEquals(HttpMethod.Post, request.method)
+            assertEquals("https://chat.example.org/api/v1/chat.sendMessage", request.url.toString())
+            assertEquals("test-user", request.headers["X-User-Id"])
+            assertEquals("test-token", request.headers["X-Auth-Token"])
+            val mapper = jacksonObjectMapper()
+            assertEquals(
+                mapper.valueToTree(mapOf("message" to mapOf(
+                    "rid" to item.roomId, "msg" to item.message, "tmid" to item.parentMessageId,
+                    "emoji" to item.emoji, "alias" to item.username,
+                ))),
+                mapper.readTree(request.body.toByteArray()),
+            )
+        }
+    }
+
+    @Test
+    fun `send message omits absent optional fields`() {
+        withResponse(
+            """{"success":true}""",
+            status = HttpStatusCode.Created,
+            invokeClient = { assertTrue(it.sendMessage(MessageQueueItem("room-1", null, "Hello"))) },
+        ) { request ->
+            val mapper = jacksonObjectMapper()
+            assertEquals(
+                mapper.readTree("""{"message":{"rid":"room-1","msg":"Hello"}}"""),
+                mapper.readTree(request.body.toByteArray()),
+            )
+        }
+    }
+
+    @Test
+    fun `send message returns false for unsuccessful or invalid response bodies`() {
+        for (body in listOf(
+            """{"success":false}""", "{}", """{"success":null}""", "not JSON",
+            """{"success":"invalid"}""",
+        )) {
+            withResponse(
+                body,
+                invokeClient = { assertFalse(it.sendMessage(MessageQueueItem("room-1", null, "Hello"))) },
+            )
+        }
+    }
+
+    @Test
+    fun `send message returns false for HTTP errors even if body claims success`() {
+        for (status in listOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized, HttpStatusCode.InternalServerError)) {
+            withResponse(
+                """{"success":true}""",
+                status = status,
+                invokeClient = { assertFalse(it.sendMessage(MessageQueueItem("room-1", null, "Hello"))) },
+            )
+        }
+    }
+
+    @Test
+    fun `send message returns false for network failures`() {
+        withResponse(
+            response = "",
+            requestFailure = IOException("Connection failed"),
+            invokeClient = { assertFalse(it.sendMessage(MessageQueueItem("room-1", null, "Hello"))) },
+        )
+    }
+
+    @Test
+    fun `send message returns false without sending if room ID or credentials are missing`() {
+        withResponse(
+            response = "",
+            invokeClient = { client ->
+                assertFalse(client.sendMessage(MessageQueueItem(null, "general", "Hello")))
+                Bot.authToken = null
+                assertFalse(client.sendMessage(MessageQueueItem("room-1", null, "Hello")))
+                Bot.authToken = "test-token"
+                Bot.userId = null
+                assertFalse(client.sendMessage(MessageQueueItem("room-1", null, "Hello")))
+            },
+        ) { error("No HTTP request expected") }
+    }
+
     private fun withResponse(
         response: String,
         status: HttpStatusCode = HttpStatusCode.OK,
         logLevel: Level = Level.DEBUG,
         verifyLogs: (List<LogEvent>) -> Unit = {},
         responseForRequest: ((HttpRequestData) -> String)? = null,
+        requestFailure: Exception? = null,
         invokeClient: (RestApiClient) -> Unit = { it.updateStatus() },
         verifyRequest: suspend (HttpRequestData) -> Unit = {},
     ): List<String> {
@@ -229,6 +320,7 @@ class RestApiClientTest {
             val client = RestApiClient("chat.example.org") {
                 MockEngine { request ->
                     verifyRequest(request)
+                    requestFailure?.let { throw it }
                     respond(responseForRequest?.invoke(request) ?: response, status, headersOf(HttpHeaders.ContentType, "application/json"))
                 }
             }

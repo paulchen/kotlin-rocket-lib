@@ -3,11 +3,10 @@ package at.rueckgr.kotlin.rocketbot.handler.stream
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.BotConfiguration
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.MessageQueueItem
 import at.rueckgr.kotlin.rocketbot.util.BotDetectionService
 import at.rueckgr.kotlin.rocketbot.util.Logging
-import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.logger
-import at.rueckgr.kotlin.rocketbot.websocket.SendMessageMessage
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.lang3.StringUtils
 
@@ -19,9 +18,11 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
     override fun handleStreamMessage(data: JsonNode): List<List<Any>> {
         val args = data.get("fields")?.get("args") ?: emptyList()
 
-        return args
+        args
             .filter { !isIgnoredRoom(it) }
-            .map { handleStreamMessageItem(it) }
+            .forEach { handleStreamMessageItem(it) }
+
+        return emptyList()
     }
 
     private fun getRoomName(item: JsonNode): String? {
@@ -56,7 +57,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         return false
     }
 
-    private fun handleStreamMessageItem(messageNode: JsonNode): List<SendMessageMessage> {
+    private fun handleStreamMessageItem(messageNode: JsonNode) {
         val messageText = messageNode.get("msg").textValue().trim()
         val parentMessageId = messageNode.get("tmid")?.textValue()?.trim()
         val roomId = messageNode.get("rid").textValue()
@@ -64,7 +65,7 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         val timestamp = messageNode.get("ts")?.get("\$date")?.asLong()
 
         if (isOldMessage(timestamp, roomId)) {
-            return emptyList()
+            return
         }
 
         val botMessage = checkForBot(messageNode)
@@ -84,8 +85,9 @@ class RoomMessageStreamHandler(eventHandler: EventHandler, botConfiguration: Bot
         else {
             eventHandler.handleRoomMessage(channel, user, message)
         }
-        return outgoingMessages.map {
-            MessageHelper.instance.createSendMessage(roomId, it.message, botConfiguration.botId, parentMessageId, it.emoji, it.username)
+        outgoingMessages.forEach {
+            val message = MessageQueueItem(roomId, null, it.message, parentMessageId, it.emoji, it.username)
+            Bot.outgoingMessageQueue.add(message)
         }
     }
 

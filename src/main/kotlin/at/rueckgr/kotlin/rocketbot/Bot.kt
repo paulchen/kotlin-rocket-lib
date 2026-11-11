@@ -4,8 +4,8 @@ import at.rueckgr.kotlin.rocketbot.exception.LoginException
 import at.rueckgr.kotlin.rocketbot.exception.TerminateWebsocketClientException
 import at.rueckgr.kotlin.rocketbot.handler.message.AbstractMessageHandler
 import at.rueckgr.kotlin.rocketbot.util.Logging
-import at.rueckgr.kotlin.rocketbot.util.MessageHelper
 import at.rueckgr.kotlin.rocketbot.util.ReconnectWaitService
+import at.rueckgr.kotlin.rocketbot.util.RestApiClient
 import at.rueckgr.kotlin.rocketbot.util.logger
 import at.rueckgr.kotlin.rocketbot.websocket.ConnectMessage
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,7 +28,7 @@ class Bot(private val botConfiguration: BotConfiguration,
           private val webserviceUserValidator: WebserviceUserValidator,
           private val healthChecker: HealthChecker) : Logging {
     companion object {
-        val webserviceMessageQueue = ArrayBlockingQueue<WebserviceMessage>(10)
+        val outgoingMessageQueue = ArrayBlockingQueue<MessageQueueItem>(10)
         val subscriptionService = SubscriptionService()
         val statusService = StatusService()
         var userId: String? = null
@@ -108,16 +108,10 @@ class Bot(private val botConfiguration: BotConfiguration,
 
     private suspend fun DefaultClientWebSocketSession.waitForWebserviceInput() {
         withContext(Dispatchers.IO) {
+            val api = RestApiClient(botConfiguration.host)
             while (isActive) {
-                val webserviceInput = webserviceMessageQueue.poll(5, TimeUnit.SECONDS) ?: continue
-                sendMessage(MessageHelper.instance.createSendMessage(
-                    webserviceInput.roomId!!,
-                    webserviceInput.message,
-                    botConfiguration.botId,
-                    webserviceInput.parentMessageId,
-                    webserviceInput.emoji,
-                    webserviceInput.username
-                ))
+                val outgoingMessage = outgoingMessageQueue.poll(5, TimeUnit.SECONDS) ?: continue
+                api.sendMessage(outgoingMessage)
 
                 Thread.sleep(1000L)
             }
@@ -186,3 +180,11 @@ class Bot(private val botConfiguration: BotConfiguration,
     }
 }
 
+data class MessageQueueItem(
+    val roomId: String?,
+    val roomName: String?,
+    val message: String,
+    val parentMessageId: String? = null,
+    val emoji: String? = null,
+    val username: String? = null
+)

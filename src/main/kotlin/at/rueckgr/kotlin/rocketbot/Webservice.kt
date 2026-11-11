@@ -48,7 +48,7 @@ class Webservice(private val webserverPort: Int,
                 authenticate("basic-auth") {
                     route("/message") {
                         post {
-                            val message = call.receive<WebserviceMessage>()
+                            val message = call.receive<MessageQueueItem>()
 
                             logger().debug("Received message via webservice: {}", message)
                             val (validationMessage, validatedMessage) = MessageHelper.instance.validateMessage(message)
@@ -56,7 +56,7 @@ class Webservice(private val webserverPort: Int,
                                 call.respondText(validationMessage, status = HttpStatusCode.BadRequest)
                             }
                             else {
-                                Bot.webserviceMessageQueue.add(validatedMessage)
+                                Bot.outgoingMessageQueue.add(validatedMessage)
                                 call.respondText("Message submitted successfully", status = HttpStatusCode.Created)
                             }
                         }
@@ -78,12 +78,3 @@ class Webservice(private val webserverPort: Int,
             false -> null
         }
 }
-
-data class WebserviceMessage(
-    val roomId: String?,
-    val roomName: String?,
-    val message: String,
-    val parentMessageId: String? = null,
-    val emoji: String? = null,
-    val username: String? = null
-)

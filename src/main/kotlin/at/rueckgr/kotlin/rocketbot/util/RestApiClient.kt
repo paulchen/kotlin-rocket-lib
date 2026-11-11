@@ -2,6 +2,10 @@ package at.rueckgr.kotlin.rocketbot.util
 
 import at.rueckgr.kotlin.rocketbot.Bot
 import at.rueckgr.kotlin.rocketbot.EventHandler
+import at.rueckgr.kotlin.rocketbot.MessageQueueItem
+import at.rueckgr.kotlin.rocketbot.generated.messaging.api.ChatApi
+import at.rueckgr.kotlin.rocketbot.generated.messaging.model.PostApiV1ChatSendMessageRequest
+import at.rueckgr.kotlin.rocketbot.generated.messaging.model.PostApiV1ChatSendMessageRequestMessage
 import at.rueckgr.kotlin.rocketbot.generated.statistics.api.StatisticsApi
 import at.rueckgr.kotlin.rocketbot.generated.usermanagement.api.RolesApi
 import at.rueckgr.kotlin.rocketbot.generated.usermanagement.api.UsersApi
@@ -20,6 +24,33 @@ class RestApiClient internal constructor(
     private val httpEngineFactory: () -> HttpClientEngine,
 ) : Logging {
     constructor(botHost: String) : this(botHost, { CIO.create() })
+
+    fun sendMessage(message: MessageQueueItem): Boolean {
+        return try {
+            runBlocking {
+                httpEngineFactory().use { engine ->
+                    val response = createChatApi(engine).postApiV1ChatSendMessage(
+                        xAuthToken = Bot.authToken!!,
+                        xUserId = Bot.userId!!,
+                        postApiV1ChatSendMessageRequest = PostApiV1ChatSendMessageRequest(
+                            message = PostApiV1ChatSendMessageRequestMessage(
+                                rid = requireNotNull(message.roomId),
+                                msg = message.message,
+                                tmid = message.parentMessageId,
+                                emoji = message.emoji,
+                                alias = message.username,
+                            ),
+                        ),
+                    )
+                    response.success && response.body().success == true
+                }
+            }
+        }
+        catch (e: Exception) {
+            logger().error("Failed to send message to room {}", message.roomId, e)
+            false
+        }
+    }
 
     fun updateStatus() {
         val success = runBlocking {
@@ -81,8 +112,8 @@ class RestApiClient internal constructor(
                 role = role,
                 xUserId = Bot.userId!!,
                 xAuthToken = Bot.authToken!!,
-                offset = offset,
-                count = limit,
+                offset = offset.toLong(),
+                count = limit.toLong(),
             )
             if (!response.success) {
                 logger().error(
@@ -107,6 +138,13 @@ class RestApiClient internal constructor(
             emptyList()
         }
     }
+
+    private fun createChatApi(engine: HttpClientEngine) = ChatApi(
+        baseUrl = "https://$botHost",
+        httpClientEngine = engine,
+        httpClientConfig = { it.configureRequestLogging() },
+        jsonBlock = { configureJson() },
+    )
 
     private fun createUsersApi(engine: HttpClientEngine) = UsersApi(
         baseUrl = "https://$botHost",
